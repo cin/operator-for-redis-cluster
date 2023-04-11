@@ -56,10 +56,7 @@ type AdminConnections struct {
 	connectionTimeout time.Duration
 	commandsMapping   map[string]string
 	clientName        string
-}
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
+	r                 *rand.Rand
 }
 
 // NewAdminConnections returns and instance of AdminConnectionsInterface
@@ -69,6 +66,7 @@ func NewAdminConnections(ctx context.Context, addrs []string, options *AdminOpti
 		connectionTimeout: defaultClientTimeout,
 		commandsMapping:   make(map[string]string),
 		clientName:        defaultClientName,
+		r:                 rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 	if options != nil {
 		if options.ConnectionTimeout != 0 {
@@ -234,7 +232,7 @@ func (cnx *AdminConnections) getRandomKeyClient() (string, ClientInterface, erro
 	if nbClient == 0 {
 		return "", nil, errors.New(ErrNotFound)
 	}
-	randNumber := rand.Intn(nbClient)
+	randNumber := cnx.r.Intn(nbClient)
 	for k, c := range cnx.clients {
 		if randNumber == 0 {
 			return k, c, nil

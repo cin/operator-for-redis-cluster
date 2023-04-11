@@ -6,7 +6,7 @@ on:
       - main
 
 env:
-  GO_VERSION: 1.19
+  GO_VERSION: 1.20
   HELM_VERSION: v3.6.3
   PYTHON_VERSION: 3.7 # required for helm tester
 
@@ -46,7 +46,7 @@ jobs:
       - name: Build operator image
         uses: docker/build-push-action@v3
         with:
-          tags: ibmcom/operator-for-redis:local
+          tags: ${{ env.DOCKERHUB_REPO }}/operator-for-redis:local
           file: Dockerfile.operator
 
   build-cluster-node:
@@ -62,7 +62,7 @@ jobs:
       - name: Build redis node image
         uses: docker/build-push-action@v3
         with:
-          tags: ibmcom/node-for-redis:local
+          tags: ${{ env.DOCKERHUB_REPO }}/node-for-redis:local
           file: Dockerfile.node
 
   build-metrics:
@@ -78,7 +78,7 @@ jobs:
       - name: Build redis metrics image
         uses: docker/build-push-action@v3
         with:
-          tags: ibmcom/metrics-for-redis:local
+          tags: ${{ env.DOCKERHUB_REPO }}/metrics-for-redis:local
           file: Dockerfile.metrics
 
   validate-helm-charts:
@@ -155,6 +155,14 @@ jobs:
 #          - kubernetes-version: "1.18"
 #            kind-node: kindest/node:v1.18.20@sha256:738cdc23ed4be6cc0b7ea277a2ebcc454c8373d7d8fb991a7fcdbd126188e6d7
     steps:
+      - name: Prep
+        id: prep
+        run: |
+          repo=cinple
+          if [[ -n "${{ secrets.DOCKERHUB_REPO }}" ]]; then
+            repo=${{ secrets.DOCKERHUB_REPO }}
+          fi
+          echo "DOCKERHUB_REPO=$repo" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -165,14 +173,14 @@ jobs:
 
       - name: Build images
         run: |
-          docker build -f Dockerfile.operator -t ibmcom/operator-for-redis:local .
-          docker build -f Dockerfile.node -t ibmcom/node-for-redis:local -t ibmcom/node-for-redis:new .
-          docker build -f Dockerfile.metrics -t ibmcom/metrics-for-redis:local .
+          docker build -f Dockerfile.operator -t ${{ env.DOCKERHUB_REPO }}/operator-for-redis:local .
+          docker build -f Dockerfile.node -t ${{ env.DOCKERHUB_REPO }}/node-for-redis:local .
+          docker build -f Dockerfile.metrics -t ${{ env.DOCKERHUB_REPO }}/metrics-for-redis:local .
 
       - name: kind create cluster
         uses: helm/kind-action@v1.5.0
         with:
-          version: v0.14.0
+          version: v0.18.0
           config: ./test/e2e/kind_config.yml
           cluster_name: kind
           node_image: ${{ matrix.kind-node }}
@@ -180,14 +188,14 @@ jobs:
             
       - name: Load Images to KIND
         run: |
-          kind load docker-image ibmcom/operator-for-redis:local
-          kind load docker-image ibmcom/node-for-redis:local
-          kind load docker-image ibmcom/node-for-redis:new
-          kind load docker-image ibmcom/metrics-for-redis:local
+          kind load docker-image ${{ env.DOCKERHUB_REPO }}/operator-for-redis:local
+          kind load docker-image ${{ env.DOCKERHUB_REPO }}/node-for-redis:local
+          kind load docker-image ${{ env.DOCKERHUB_REPO }}/node-for-redis:local
+          kind load docker-image ${{ env.DOCKERHUB_REPO }}/metrics-for-redis:local
     
       - name: Install operator-for-redis with Helm
         id: helm
-        run: helm install operator-for-redis charts/operator-for-redis --wait --set image.repository=ibmcom/operator-for-redis --set image.tag=local --set logLevel=7
+        run: helm install operator-for-redis charts/operator-for-redis --wait --set image.repository=${{ env.DOCKERHUB_REPO }}/operator-for-redis --set image.tag=local --set logLevel=7
       
       - name: Run e2e tests
         id: e2e
