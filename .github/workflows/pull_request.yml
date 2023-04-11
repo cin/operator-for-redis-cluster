@@ -25,7 +25,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          args: --timeout=2m --enable exportloopref
+          args: --timeout=3m --enable exportloopref
           skip-pkg-cache: true
           skip-build-cache: true
       
