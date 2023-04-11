@@ -170,12 +170,8 @@ jobs:
           wait: 120s
             
       - name: Load Images to KIND
-        run: |
-          kind load docker-image ${{ secrets.DOCKERHUB_REPO }}/operator-for-redis:local
-          kind load docker-image ${{ secrets.DOCKERHUB_REPO }}/node-for-redis:local
-          kind load docker-image ${{ secrets.DOCKERHUB_REPO }}/node-for-redis:local
-          kind load docker-image ${{ secrets.DOCKERHUB_REPO }}/metrics-for-redis:local
-    
+        run: make load PREFIX=${{ secrets.DOCKERHUB_REPO }}/ TAG=local 
+
       - name: Install operator-for-redis with Helm
         id: helm
         run: helm install operator-for-redis charts/operator-for-redis --wait --set image.repository=${{ secrets.DOCKERHUB_REPO }}/operator-for-redis --set image.tag=local --set logLevel=7
