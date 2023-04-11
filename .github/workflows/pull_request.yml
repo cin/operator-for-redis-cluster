@@ -7,7 +7,7 @@ on:
 
 env:
   GO_VERSION: 1.20
-  HELM_VERSION: v3.6.3
+  HELM_VERSION: v3.11.2
   PYTHON_VERSION: 3.7 # required for helm tester
 
 jobs:
@@ -21,14 +21,13 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
-      
-      - name: Go Lint
-        uses: golangci/golangci-lint-action@v3.4.0
+
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v3
         with:
-          args: --timeout=5m --enable exportloopref
+          args: --timeout=2m --enable exportloopref
           skip-pkg-cache: true
           skip-build-cache: true
-          skip-go-installation: true
       
       - name: Run integration tests
         run: make test
