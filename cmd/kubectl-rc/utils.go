@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"strings"
+	"time"
 
 	"github.com/golang/glog"
 	kapiv1 "k8s.io/api/core/v1"
@@ -38,7 +40,10 @@ func execCommandOnPod(restConfig *rest.Config, clientset *kubernetes.Clientset, 
 		glog.Fatalf("exec to pod %s failed while retrieving `info`", pod.Name)
 	}
 	var stdout bytes.Buffer
-	err = exec.Stream(remotecommand.StreamOptions{
+	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Minute)
+	defer cancelFunc()
+
+	err = exec.StreamWithContext(ctx, remotecommand.StreamOptions{
 		Stdout: &stdout,
 		Tty:    false,
 	})
