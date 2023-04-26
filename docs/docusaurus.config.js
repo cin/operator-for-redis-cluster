@@ -3,7 +3,7 @@ const isCI = !!process.env.CI;
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
   title: 'Operator for Redis Cluster',
-  url: isCI ? 'https://ibm.github.io' : 'http://localhost:3001',
+  url: isCI ? 'https://cin.github.io' : 'http://localhost:3001',
   baseUrl: '/operator-for-redis-cluster/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -29,7 +29,7 @@ module.exports = {
       },
       items: [
         {
-          href: 'https://ibm.github.io/operator-for-redis-cluster',
+          href: 'https://cin.github.io/operator-for-redis-cluster',
           label: 'GitHub',
           position: 'right',
         },
@@ -56,13 +56,13 @@ module.exports = {
           sidebarPath: './sidebars.js',
           // Please change this to your repo.
           editUrl:
-            'https://ibm.github.io/operator-for-redis-cluster',
+            'https://cin.github.io/operator-for-redis-cluster',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           editUrl:
-            'https://ibm.github.io/operator-for-redis-cluster',
+            'https://cin.github.io/operator-for-redis-cluster',
         },
       },
     ],
