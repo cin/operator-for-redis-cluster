@@ -3,9 +3,9 @@ entries:
   node-for-redis:
   - apiVersion: v2
     appVersion: 6.2.7
-    created: "2023-04-26T05:38:15.870726075Z"
+    created: "2023-04-26T14:07:20.842751521Z"
     description: Cluster node for interfacing with Redis
-    digest: 7a4dd277e7e7dce7f2d53351ed1c8e5fd2144df91ba456e52410bcf480d29aeb
+    digest: dbd5360a9c97cf66b6015348fe17cbdce90c8512fa8ecc3b48ef745710425671
     maintainers:
     - name: tomashibm
     - name: cin
@@ -14,11 +14,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.16.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.16.tgz
     version: 0.3.16
   - apiVersion: v2
     appVersion: 6.2.7
-    created: "2023-04-26T05:38:15.869578475Z"
+    created: "2023-04-26T14:07:20.841594916Z"
     description: Cluster node for interfacing with Redis
     digest: c39b4853c07dd1ebe4bfde2381ddaed2c27512c61b97b38cdc1f965e6e001d3c
     maintainers:
@@ -29,11 +29,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.15.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.15.tgz
     version: 0.3.15
   - apiVersion: v2
     appVersion: 6.2.7
-    created: "2023-04-26T05:38:15.868414376Z"
+    created: "2023-04-26T14:07:20.840423611Z"
     description: Cluster node for interfacing with Redis
     digest: a2fd3b5261533962dd124149f0288c68be901f0c9336f3b4924ac1b5efac6f4d
     maintainers:
@@ -44,11 +44,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.14.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.14.tgz
     version: 0.3.14
   - apiVersion: v2
     appVersion: 6.2.7
-    created: "2023-04-26T05:38:15.867107877Z"
+    created: "2023-04-26T14:07:20.839262506Z"
     description: Cluster node for interfacing with Redis
     digest: e388dee039b3fe663e5bb137f5dcbf5c402776f6950e9b6c86e54339cc529abc
     maintainers:
@@ -59,11 +59,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.13.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.13.tgz
     version: 0.3.13
   - apiVersion: v2
     appVersion: 6.2.7
-    created: "2023-04-26T05:38:15.864988179Z"
+    created: "2023-04-26T14:07:20.832638277Z"
     description: Cluster node for interfacing with Redis
     digest: 15423eaaf65d31ec4adfd38f6237220bd97dce4fcb5bfd220d273a43b7d6a957
     maintainers:
@@ -74,11 +74,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.12.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.12.tgz
     version: 0.3.12
   - apiVersion: v2
     appVersion: 6.2.7
-    created: "2023-04-26T05:38:15.86350028Z"
+    created: "2023-04-26T14:07:20.831525072Z"
     description: Cluster node for interfacing with Redis
     digest: 2e199e60e1c0127fd326c7b1bbe4f2d13818a2a16c71d37901525b7e591fc732
     maintainers:
@@ -89,11 +89,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.11.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.11.tgz
     version: 0.3.11
   - apiVersion: v2
     appVersion: 6.2.7
-    created: "2023-04-26T05:38:15.862342981Z"
+    created: "2023-04-26T14:07:20.830354167Z"
     description: Cluster node for interfacing with Redis
     digest: 906cc34790311f604859841a09c51de8688a2566bfa5a1afc80fb4685c2fd1fc
     maintainers:
@@ -104,11 +104,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.10.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.10.tgz
     version: 0.3.10
   - apiVersion: v2
     appVersion: 6.2.6
-    created: "2023-04-26T05:38:15.87635327Z"
+    created: "2023-04-26T14:07:20.849393851Z"
     description: Cluster node for interfacing with Redis
     digest: f525903207cb0c16b3272c7bf6c16dd45d7f1c383ff170d1ce7871bcc9454dce
     maintainers:
@@ -119,11 +119,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.9.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.9.tgz
     version: 0.3.9
   - apiVersion: v2
     appVersion: 6.2.6
-    created: "2023-04-26T05:38:15.875220771Z"
+    created: "2023-04-26T14:07:20.847476242Z"
     description: Cluster node for interfacing with Redis
     digest: 4289269f3d29daeb6098dd8d1ce86eaa4999786ba91bf37af1d0d543e02477a7
     maintainers:
@@ -134,11 +134,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.8.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.8.tgz
     version: 0.3.8
   - apiVersion: v2
     appVersion: 6.2.6
-    created: "2023-04-26T05:38:15.874121972Z"
+    created: "2023-04-26T14:07:20.846254537Z"
     description: Cluster node for interfacing with Redis
     digest: e689e212862b195cc860149fbb8afccdc4b56e74970706babf513bf326cd3b9b
     maintainers:
@@ -149,11 +149,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.7.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.7.tgz
     version: 0.3.7
   - apiVersion: v2
     appVersion: 6.2.6
-    created: "2023-04-26T05:38:15.872969573Z"
+    created: "2023-04-26T14:07:20.845129332Z"
     description: IBM Cluster for interfacing with Redis
     digest: 449a7fbe5164d6dca34426837f578420d7fa56280fc61b574fbd1f094cd99f8c
     maintainers:
@@ -164,11 +164,11 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.6.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.6.tgz
     version: 0.3.6
   - apiVersion: v2
     appVersion: 6.2.6
-    created: "2023-04-26T05:38:15.871853374Z"
+    created: "2023-04-26T14:07:20.843971527Z"
     description: IBM Cluster for interfacing with Redis
     digest: cee77ec7fdb4276d24a02c62f672c0769fc153ebfd69d944a40930b04a5794c7
     maintainers:
@@ -179,13 +179,13 @@ entries:
     name: node-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.5.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/node-for-redis-0.3.5.tgz
     version: 0.3.5
   operator-for-redis:
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.902492051Z"
+    created: "2023-04-26T14:07:20.869375338Z"
     description: Operator for creating and managing Redis clusters
-    digest: f7ed79b7c8f537644c16e7c0698beb4b4dc2475558b5bbbf7b62ac4d1ef5077b
+    digest: 7dadd335e092aa5501d828ec0bab288271e378780765339948a290510ea832c3
     maintainers:
     - name: tomashibm
     - name: cin
@@ -194,10 +194,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.16.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.16.tgz
     version: 0.3.16
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.899649554Z"
+    created: "2023-04-26T14:07:20.867130628Z"
     description: Operator for creating and managing Redis clusters
     digest: cda4685a314d01d14c9412136c2f153893583cb51b2b21aee4e8e580b80badee
     maintainers:
@@ -208,10 +208,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.15.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.15.tgz
     version: 0.3.15
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.893199158Z"
+    created: "2023-04-26T14:07:20.863560413Z"
     description: Operator for creating and managing Redis clusters
     digest: f90ba4705bf994500c9df087dfc83e1baa24b868207620558972376f224a86c3
     maintainers:
@@ -222,10 +222,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.14.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.14.tgz
     version: 0.3.14
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.888785161Z"
+    created: "2023-04-26T14:07:20.860979401Z"
     description: Operator for creating and managing Redis clusters
     digest: a68567e566f8788fe84347b0a1c90fe9e64c1027b5a3cb6801f4af49302873b0
     maintainers:
@@ -236,10 +236,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.13.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.13.tgz
     version: 0.3.13
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.886168763Z"
+    created: "2023-04-26T14:07:20.857825487Z"
     description: Operator for creating and managing Redis clusters
     digest: 52b70af07075b2a7be5dfc555a7019ccdfac9c7a6c4a281c1d93111673da6fa1
     maintainers:
@@ -250,10 +250,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.12.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.12.tgz
     version: 0.3.12
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.883087266Z"
+    created: "2023-04-26T14:07:20.855089075Z"
     description: Operator for creating and managing Redis clusters
     digest: a3e7ac2022dc3f2b051a654f409d9803dbcea25fed5001d1aa557a8bb966415f
     maintainers:
@@ -264,10 +264,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.11.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.11.tgz
     version: 0.3.11
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.880357868Z"
+    created: "2023-04-26T14:07:20.852993966Z"
     description: Operator for creating and managing Redis clusters
     digest: 3166d1fdcd1c5b53d320c5c3e5abd4fef3c21458f8f728f66bff8b139b184e62
     maintainers:
@@ -278,10 +278,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.10.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.10.tgz
     version: 0.3.10
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.922536337Z"
+    created: "2023-04-26T14:07:20.884153603Z"
     description: Operator for creating and managing Redis clusters
     digest: f97de5f4c14b75a966f8c858466a04371742133e1b340f5bd30ffbbd15363b97
     maintainers:
@@ -292,10 +292,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.9.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.9.tgz
     version: 0.3.9
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.919771139Z"
+    created: "2023-04-26T14:07:20.880868088Z"
     description: Operator for creating and managing Redis clusters
     digest: 2d4f7bf56a381dc940c94fc3ad64bdf3be2f5ca2eaab77ce9f3a63cf0ef7074d
     maintainers:
@@ -306,10 +306,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.8.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.8.tgz
     version: 0.3.8
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.917111341Z"
+    created: "2023-04-26T14:07:20.878425978Z"
     description: Operator for creating and managing Redis clusters
     digest: 5c679e77369d8ce64f09ca31ef5ac415d133ef2e4f45064bc2a2e188c6e691a8
     maintainers:
@@ -320,10 +320,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.7.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.7.tgz
     version: 0.3.7
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.907785648Z"
+    created: "2023-04-26T14:07:20.875940567Z"
     description: IBM Operator for creating and managing Redis clusters
     digest: 2bc14cd0b4ed461de70c9a55fc684b9c9d863f1ed05402427321f26d51febce6
     maintainers:
@@ -334,10 +334,10 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.6.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.6.tgz
     version: 0.3.6
   - apiVersion: v2
-    created: "2023-04-26T05:38:15.90513215Z"
+    created: "2023-04-26T14:07:20.871857449Z"
     description: IBM Operator for creating and managing Redis clusters
     digest: f1eb5062bb0399d35efa12bea03a4464387846795fd918915d9c55197961e21c
     maintainers:
@@ -348,6 +348,6 @@ entries:
     name: operator-for-redis
     type: application
     urls:
-    - https://raw.githubusercontent.com/IBM/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.5.tgz
+    - https://raw.githubusercontent.com/cin/operator-for-redis-cluster/operator-for-redis-cluster/main/helm-releases/operator-for-redis-0.3.5.tgz
     version: 0.3.5
-generated: "2023-04-26T05:38:15.860881282Z"
+generated: "2023-04-26T14:07:20.828880861Z"
