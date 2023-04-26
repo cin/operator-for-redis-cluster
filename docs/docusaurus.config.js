@@ -9,7 +9,7 @@ module.exports = {
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   trailingSlash: false,
-  organizationName: 'IBM',
+  organizationName: 'cin',
   projectName: 'operator-for-redis-cluster',
   themeConfig: {
     docs: {
