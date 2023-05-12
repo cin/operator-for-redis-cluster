@@ -284,9 +284,9 @@ func (c *Controller) syncCluster(ctx context.Context, redisCluster *rapi.RedisCl
 	}
 
 	// check if the operator needs to execute some operation on the redis cluster
-	needSanitize, err := c.checkSanity(ctx, redisCluster, admin, clusterInfos)
+	needSanitize, sanitizeAction, err := c.checkSanity(ctx, redisCluster, admin, clusterInfos)
 	if err != nil {
-		glog.Errorf("checkSanity error occurred in dry run mode: %v", err)
+		glog.Errorf("checkSanity error occurred in action %s, dry run mode: %v", sanitizeAction, err)
 		return result, err
 	}
 
@@ -313,6 +313,19 @@ func (c *Controller) syncCluster(ctx context.Context, redisCluster *rapi.RedisCl
 			}
 			return result, nil
 		}
+	}
+
+	// Run cluster action so santitychecks can be run in non dryrun mode
+	// when there are stuck terminating pods
+	if needSanitize && sanitizeAction == sanitycheck.FixTerminatingPodsAction {
+		result, err = c.clusterAction(ctx, admin, redisCluster, clusterInfos)
+		if err != nil {
+			return result, err
+		}
+		if c.updateClusterStatus(ctx, redisCluster) {
+			result.Requeue = true
+		}
+		return result, nil
 	}
 
 	setClusterStatusCondition(&redisCluster.Status, true)
@@ -385,7 +398,7 @@ func (c *Controller) buildClusterState(cluster *rapi.RedisCluster, clusterInfos 
 	return clusterState, nil
 }
 
-func (c *Controller) checkSanity(ctx context.Context, cluster *rapi.RedisCluster, admin redis.AdminInterface, infos *redis.ClusterInfos) (bool, error) {
+func (c *Controller) checkSanity(ctx context.Context, cluster *rapi.RedisCluster, admin redis.AdminInterface, infos *redis.ClusterInfos) (bool, string, error) {
 	return sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, true)
 }
 

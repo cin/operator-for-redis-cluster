@@ -27,14 +27,14 @@ func (c *Controller) clusterAction(ctx context.Context, admin redis.AdminInterfa
 	var err error
 	result := ctrl.Result{}
 	// run sanity check if needed
-	needSanity, err := sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, true)
+	needSanity, sanitizeAction, err := sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, true)
 	if err != nil {
-		glog.Errorf("[clusterAction] cluster %s/%s, an error occurs during sanity check: %v ", cluster.Namespace, cluster.Name, err)
+		glog.Errorf("[clusterAction] cluster %s/%s, an error occurs during sanity check %s: %v ", cluster.Namespace, cluster.Name, sanitizeAction, err)
 		return result, err
 	}
 	if needSanity {
-		glog.V(3).Infof("[clusterAction] run sanity check cluster: %s/%s", cluster.Namespace, cluster.Name)
-		result.Requeue, err = sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, false)
+		glog.V(3).Infof("[clusterAction] run sanity check %s, cluster: %s/%s", sanitizeAction, cluster.Namespace, cluster.Name)
+		result.Requeue, sanitizeAction, err = sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, false)
 		return result, err
 	}
 
