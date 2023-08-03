@@ -7,7 +7,7 @@ on:
 
 env:
   GO_VERSION: ^1.20
-  HELM_VERSION: v3.11.2
+  HELM_VERSION: v3.12.2
   PYTHON_VERSION: 3.7 # required for helm tester
 
 jobs:
@@ -120,7 +120,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 16.17.1 # This is recommended LTS version which includes npm 6.14.10
+          node-version: 18.17.0
       - name: Build docs website
         run: |
           npm -v
