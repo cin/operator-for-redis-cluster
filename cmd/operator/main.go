@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 
+	ctrlserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
+
 	rapi "github.com/IBM/operator-for-redis-cluster/api/v1alpha1"
 	"github.com/IBM/operator-for-redis-cluster/pkg/controller"
 	"github.com/IBM/operator-for-redis-cluster/pkg/garbagecollector"
@@ -48,8 +50,10 @@ func main() {
 
 	restConfig := ctrl.GetConfigOrDie()
 	mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
-		Scheme:                 scheme,
-		MetricsBindAddress:     config.MetricsAddr,
+		Scheme: scheme,
+		Metrics: ctrlserver.Options{
+			BindAddress: config.MetricsAddr,
+		},
 		HealthProbeBindAddress: config.HealthCheckAddr,
 		LeaderElection:         config.LeaderElectionEnabled,
 		LeaderElectionID:       leaderElectionID,

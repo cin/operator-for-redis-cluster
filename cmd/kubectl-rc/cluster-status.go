@@ -12,6 +12,8 @@ import (
 
 	rapi "github.com/IBM/operator-for-redis-cluster/api/v1alpha1"
 	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/renderer"
+	"github.com/olekukonko/tablewriter/tw"
 	kapiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
 	kclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -150,17 +152,33 @@ func (cs *ClusterStatus) getRedisPods(client kclient.Client) error {
 }
 
 func (cs *ClusterStatus) outputRedisClusterStatus() {
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"POD_NAME", "IP", "NODE", "ID", "ZONE", "USED MEMORY", "MAX MEMORY", "KEYS", "SLOTS"})
-	table.SetBorders(tablewriter.Border{Left: false, Top: false, Right: false, Bottom: false})
-	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
-	table.SetRowLine(false)
-	table.SetCenterSeparator("")
-	table.SetColumnSeparator("")
-	table.SetRowSeparator("")
-	table.SetAlignment(tablewriter.ALIGN_LEFT)
-	table.SetHeaderLine(false)
-	table.SetAutoWrapText(false)
+	table := tablewriter.NewTable(os.Stdout,
+		tablewriter.WithRenderer(renderer.NewBlueprint(tw.Rendition{
+			Borders: tw.BorderNone,
+			Settings: tw.Settings{
+				Separators: tw.Separators{
+					BetweenRows:    tw.Off,
+					BetweenColumns: tw.Off,
+				},
+				Lines: tw.Lines{
+					ShowHeaderLine: tw.Off,
+				},
+			},
+		})),
+		tablewriter.WithConfig(tablewriter.Config{
+			Header: tw.CellConfig{
+				Formatting: tw.CellFormatting{
+					Alignment: tw.AlignLeft,
+				},
+			},
+			Row: tw.CellConfig{
+				Formatting: tw.CellFormatting{
+					Alignment: tw.AlignLeft,
+				},
+			},
+		}))
+
+	table.Header("POD_NAME", "IP", "NODE", "ID", "ZONE", "USED MEMORY", "MAX MEMORY", "KEYS", "SLOTS")
 
 	var sortedPrimaries []string
 	for primary := range cs.primaryToReplicas {
@@ -204,5 +222,5 @@ func (cs *ClusterStatus) outputRedisClusterStatus() {
 		table.Append(v)
 	}
 	table.Append([]string{"", ""})
-	table.Render() // Send output
+	table.Render()
 }
