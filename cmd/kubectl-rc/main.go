@@ -155,9 +155,9 @@ func outputRedisClusterState(data [][]string) {
 	table.Header("Name", "Namespace", "Pods", "Ops Status", "Redis Status", "Nb Primary", "Replication", "Zone Skew")
 
 	for _, v := range data {
-		table.Append(v)
+		_ = table.Append(v)
 	}
-	table.Render()
+	_ = table.Render()
 }
 
 func hasStatus(cluster *rapi.RedisCluster, conditionType rapi.RedisClusterConditionType, status kapiv1.ConditionStatus) bool {

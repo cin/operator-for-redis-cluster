@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"reflect"
+	"time"
 
 	"github.com/IBM/operator-for-redis-cluster/internal/testutil"
 
@@ -451,7 +452,7 @@ func TestController_applyConfiguration(t *testing.T) {
 					},
 				},
 			},
-			want:    ctrl.Result{Requeue: true},
+			want:    ctrl.Result{RequeueAfter: time.Second},
 			wantErr: false,
 		},
 	}

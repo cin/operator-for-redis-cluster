@@ -219,8 +219,8 @@ func (cs *ClusterStatus) outputRedisClusterStatus() {
 	}
 
 	for _, v := range info {
-		table.Append(v)
+		_ = table.Append(v)
 	}
-	table.Append([]string{"", ""})
-	table.Render()
+	_ = table.Append([]string{"", ""})
+	_ = table.Render()
 }
