@@ -17,14 +17,14 @@ func TestE2E(t *testing.T) {
 }
 
 func getDefaultKubeConfig() string {
-    if v, ok := os.LookupEnv("KUBECONFIG"); ok {
-        return v
-    }
-    home, err := os.UserHomeDir()
-    if err != nil {
-        return ""
-    }
-    return filepath.Join(home, ".kube", "config")
+	if v, ok := os.LookupEnv("KUBECONFIG"); ok {
+		return v
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(home, ".kube", "config")
 }
 
 func TestMain(m *testing.M) {
