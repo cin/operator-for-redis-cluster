@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	redisImageName = "ibmcom/operator-for-redis-cluster-node"
+	redisImageName = "cinple/operator-for-redis-cluster-node"
 )
 
 // NewRedisCluster builds and returns a new RedisCluster instance

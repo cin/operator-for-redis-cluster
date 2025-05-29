@@ -71,24 +71,24 @@ $ kind create cluster --config ./test/e2e/kind_config.yml
 
 Build the required docker images (with optional PREFIX and PLATFORM):
 ```console
-make container PREFIX=ibmcom/ TAG=latest PLATFORM=linux/amd64
+make container PREFIX=cinple/ TAG=latest PLATFORM=linux/amd64
 ```
 
 - The default PLATFORM is linux/amd64. To build for Apple Silicon (M1/M2), use `PLATFORM=linux/arm64`.
-- The PREFIX variable lets you namespace your images (e.g., `ibmcom/`).
+- The PREFIX variable lets you namespace your images (e.g., `cinple/`).
 
 Once the kind cluster is up and running, load the images into the kind cluster:
 ```console
-$ kind load docker-image ibmcom/operator-for-redis-cluster-operator:latest
-$ kind load docker-image ibmcom/operator-for-redis-cluster-node:latest
-$ kind load docker-image ibmcom/operator-for-redis-cluster-metrics:latest
+$ kind load docker-image cinple/operator-for-redis-cluster-operator:latest
+$ kind load docker-image cinple/operator-for-redis-cluster-node:latest
+$ kind load docker-image cinple/operator-for-redis-cluster-metrics:latest
 ```
 
 ### Deploy a Redis operator
 
 Install the `operator-for-redis` Helm chart:
 ```console
-$ helm install op charts/operator-for-redis --wait --set image.repository=ibmcom/operator-for-redis-cluster-operator --set image.tag=latest
+$ helm install op charts/operator-for-redis --wait --set image.repository=cinple/operator-for-redis-cluster-operator --set image.tag=latest
 NAME: op
 LAST DEPLOYED: <date>
 NAMESPACE: default
@@ -167,21 +167,21 @@ If you followed the steps for creating a `kind` cluster with the e2e test config
 
 Build the required docker images:
 ```console
-make container PREFIX=ibmcom/ TAG=local
-make container-node PREFIX=ibmcom/ TAG=new
+make container PREFIX=cinple/ TAG=local
+make container-node PREFIX=cinple/ TAG=new
 ```
 Note that we need both `local` and `new` image tags for a rolling update e2e test case.
 
 Load the required images into the kind cluster:
 ```console
-$ kind load docker-image ibmcom/operator-for-redis-cluster-operator:local
-$ kind load docker-image ibmcom/operator-for-redis-cluster-node:local
-$ kind load docker-image ibmcom/operator-for-redis-cluster-node:new
+$ kind load docker-image cinple/operator-for-redis-cluster-operator:local
+$ kind load docker-image cinple/operator-for-redis-cluster-node:local
+$ kind load docker-image cinple/operator-for-redis-cluster-node:new
 ```
 
 Once the kind cluster is up and running, deploy the `operator-for-redis-cluster` Helm chart:
 ```console
-$ helm install op charts/operator-for-redis --wait --set image.repository=ibmcom/operator-for-redis-cluster-operator --set image.tag=local
+$ helm install op charts/operator-for-redis --wait --set image.repository=cinple/operator-for-redis-cluster-operator --set image.tag=local
 NAME: op
 LAST DEPLOYED: <date>
 NAMESPACE: default

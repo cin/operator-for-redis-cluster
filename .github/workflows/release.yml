@@ -26,7 +26,7 @@ jobs:
         id: meta
         with:
           images: |
-            cinple/operator-for-redis
+            cinple/operator-for-redis-cluster-operator
           tags: type=ref,event=tag
 
       - name: Login to DockerHub
@@ -61,7 +61,7 @@ jobs:
         id: meta
         with:
           images: |
-            cinple/node-for-redis
+            cinple/operator-for-redis-cluster-node
           tags: type=ref,event=tag
 
       - name: Login to DockerHub
@@ -95,7 +95,7 @@ jobs:
         id: meta
         with:
           images: |
-            ibmcom/operator-for-redis-cluster-metrics
+            cinple/operator-for-redis-cluster-metrics
           tags: type=ref,event=tag
 
       - name: Login to DockerHub
