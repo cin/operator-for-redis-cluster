@@ -95,7 +95,7 @@ jobs:
         id: meta
         with:
           images: |
-            cinple/metrics-for-redis
+            ibmcom/operator-for-redis-cluster-metrics
           tags: type=ref,event=tag
 
       - name: Login to DockerHub

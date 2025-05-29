@@ -7,10 +7,11 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
-
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	kclient "sigs.k8s.io/controller-runtime/pkg/client"
+	logf "sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
 
 // Framework stores necessary info to run e2e
@@ -28,6 +29,9 @@ var FrameworkContext frameworkContextType
 
 // NewFramework creates and initializes the Framework struct
 func NewFramework() (*Framework, error) {
+	// Initialize controller-runtime logger to prevent warnings
+	logf.SetLogger(zap.New(zap.UseDevMode(true)))
+
 	Logf("KubeconfigPath-> %q", FrameworkContext.KubeConfigPath)
 	kubeConfig, err := clientcmd.BuildConfigFromFlags("", FrameworkContext.KubeConfigPath)
 	if err != nil {
