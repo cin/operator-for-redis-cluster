@@ -43,7 +43,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build operator image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           tags: cinple/operator-for-redis-cluster-operator:local
           file: Dockerfile.operator
@@ -59,7 +59,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build redis node image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           tags: cinple/operator-for-redis-cluster-node:local
           file: Dockerfile.node
@@ -75,7 +75,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build redis metrics image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           tags: cinple/operator-for-redis-cluster-metrics:local
           file: Dockerfile.metrics
