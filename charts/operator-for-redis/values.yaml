@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ibmcom/operator-for-redis
+  repository: ibmcom/operator-for-redis-cluster-operator
   # Overrides the image tag whose default is the chart appVersion
   tag: ""
   pullPolicy: IfNotPresent

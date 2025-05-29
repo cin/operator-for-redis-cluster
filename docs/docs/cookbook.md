@@ -69,30 +69,42 @@ From the project root directory, create your kind cluster using the e2e test con
 $ kind create cluster --config ./test/e2e/kind_config.yml
 ```
 
-Build the required docker images:
+Build the required docker images (with optional PREFIX and PLATFORM):
 ```console
-make container PREFIX= TAG=latest
+make container PREFIX=ibmcom/ TAG=latest PLATFORM=linux/amd64
 ```
+
+- The default PLATFORM is linux/amd64. To build for Apple Silicon (M1/M2), use `PLATFORM=linux/arm64`.
+- The PREFIX variable lets you namespace your images (e.g., `ibmcom/`).
 
 Once the kind cluster is up and running, load the images into the kind cluster:
 ```console
-$ kind load docker-image operator-for-redis:latest
-$ kind load docker-image node-for-redis:latest
-$ kind load docker-image metrics-for-redis:latest
+$ kind load docker-image ibmcom/operator-for-redis-cluster-operator:latest
+$ kind load docker-image ibmcom/operator-for-redis-cluster-node:latest
+$ kind load docker-image ibmcom/operator-for-redis-cluster-metrics:latest
 ```
 
 ### Deploy a Redis operator
 
-Install the `operator-for-redis` Helm chart:
+Install the `operator-for-redis-cluster` Helm chart:
 ```console
-$ helm install op charts/operator-for-redis --wait --set image.repository=operator-for-redis --set image.tag=latest
+$ helm install op charts/operator-for-redis-cluster --wait --set image.repository=ibmcom/operator-for-redis-cluster-operator --set image.tag=latest
 NAME: op
-LAST DEPLOYED: Thu Oct 21 15:11:51 2021
+LAST DEPLOYED: <date>
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
 TEST SUITE: None
 ```
+
+### Notes on Multi-Architecture Builds
+
+- The Makefile now supports multi-architecture builds using `docker buildx` and the `PLATFORM` variable.
+- Example for Apple Silicon (M1/M2):
+  ```console
+  make container-operator PLATFORM=linux/arm64
+  ```
+- All Go binaries and Docker images will be built for the specified platform.
 
 Confirm that the operator is running properly:
 
@@ -162,16 +174,16 @@ Note that we need both `local` and `new` image tags for a rolling update e2e tes
 
 Load the required images into the kind cluster:
 ```console
-$ kind load docker-image ibmcom/operator-for-redis:local
-$ kind load docker-image ibmcom/node-for-redis:local
-$ kind load docker-image ibmcom/node-for-redis:new
+$ kind load docker-image ibmcom/operator-for-redis-cluster-operator:local
+$ kind load docker-image ibmcom/operator-for-redis-cluster-node:local
+$ kind load docker-image ibmcom/operator-for-redis-cluster-node:new
 ```
 
-Once the kind cluster is up and running, deploy the `operator-for-redis` Helm chart:
+Once the kind cluster is up and running, deploy the `operator-for-redis-cluster` Helm chart:
 ```console
-$ helm install op charts/operator-for-redis --wait --set image.repository=ibmcom/operator-for-redis --set image.tag=local
+$ helm install op charts/operator-for-redis --wait --set image.repository=ibmcom/operator-for-redis-cluster-operator --set image.tag=local
 NAME: op
-LAST DEPLOYED: Thu Oct 21 15:11:51 2021
+LAST DEPLOYED: <date>
 NAMESPACE: default
 STATUS: deployed
 REVISION: 1
