@@ -10,7 +10,7 @@ require (
 	github.com/golang/glog v1.2.5
 	github.com/heptiolabs/healthcheck v0.0.0-20211123025425-613501dd5deb
 	github.com/mediocregopher/radix/v4 v4.1.4
-	github.com/olekukonko/tablewriter v1.0.6
+	github.com/olekukonko/tablewriter v1.0.7
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.37.0
 	github.com/prometheus/client_golang v1.22.0
@@ -32,7 +32,7 @@ require (
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.8.0 // indirect
-	github.com/go-logr/logr v1.4.2 // indirect
+	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/zapr v1.3.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.1 // indirect
 	github.com/go-openapi/jsonreference v0.21.0 // indirect
