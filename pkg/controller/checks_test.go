@@ -1208,7 +1208,7 @@ func Test_filterLostNodes(t *testing.T) {
 	pods = append(pods, kapiv1.Pod{Status: kapiv1.PodStatus{Reason: "Finished"}})
 	pods = append(pods, kapiv1.Pod{Status: kapiv1.PodStatus{Reason: "NodeLost"}})
 	ok, ko := filterLostNodes(pods)
-	if !(len(ok) == 2 || len(ko) == 1) {
+	if len(ok) != 2 || len(ko) != 1 {
 		t.Errorf("filterLostNodes() wrong result ok: %v, ko: %v", ok, ko)
 	}
 }

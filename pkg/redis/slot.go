@@ -99,12 +99,13 @@ func DecodeSlotRange(str string) (SlotSlice, *ImportingSlot, *MigratingSlot, err
 		if err != nil {
 			return slots, nil, nil, err
 		}
-		if separator == importingSeparator {
+		switch separator {
+		case importingSeparator:
 			return slots, &ImportingSlot{SlotID: slot, FromNodeID: strings.TrimSuffix(val[2], "]")}, nil, err
-		} else if separator == migratingSeparator {
+		case migratingSeparator:
 			return slots, nil, &MigratingSlot{SlotID: slot, ToNodeID: strings.TrimSuffix(val[2], "]")}, err
-		} else {
-			return slots, nil, nil, fmt.Errorf("Impossible to decode slot %s", str)
+		default:
+			return slots, nil, nil, fmt.Errorf("impossible to decode slot %s", str)
 		}
 	} else if len(val) > 0 {
 		min, err = DecodeSlot(val[0])
@@ -120,7 +121,7 @@ func DecodeSlotRange(str string) (SlotSlice, *ImportingSlot, *MigratingSlot, err
 			max = min
 		}
 	} else {
-		return slots, nil, nil, fmt.Errorf("Impossible to decode slot '%s'", str)
+		return slots, nil, nil, fmt.Errorf("impossible to decode slot '%s'", str)
 	}
 
 	slots = BuildSlotSlice(min, max)

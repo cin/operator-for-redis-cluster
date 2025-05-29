@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	redisImageName = "ibmcom/node-for-redis"
+	redisImageName = "cinple/operator-for-redis-cluster-node"
 )
 
 // NewRedisCluster builds and returns a new RedisCluster instance
@@ -435,6 +435,11 @@ func CreateRedisNodeServiceAccountFunc(kubeClient kclient.Client, redisCluster *
 					{
 						APIGroups: []string{""},
 						Resources: []string{"namespaces", "services", "endpoints", "pods"},
+						Verbs:     []string{"list", "get"},
+					},
+					{
+						APIGroups: []string{"discovery.k8s.io"},
+						Resources: []string{"endpointslices"},
 						Verbs:     []string{"list", "get"},
 					},
 				},

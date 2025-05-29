@@ -26,6 +26,8 @@ import (
 
 	"github.com/IBM/operator-for-redis-cluster/pkg/redis"
 	"github.com/IBM/operator-for-redis-cluster/pkg/utils"
+
+	discoveryv1 "k8s.io/api/discovery/v1"
 )
 
 // RedisNode contains all info to run the redis-node.
@@ -165,7 +167,7 @@ func (r *RedisNode) run(me *Node) (*Node, error) {
 		return nil, starter
 	}
 
-	configFunc := func() (bool, error) {
+	configFunc := func(ctx context.Context) (bool, error) {
 		// Initial redis server configuration
 		nodes, initCluster := r.isClusterInitialization(me.Addr)
 
@@ -187,7 +189,7 @@ func (r *RedisNode) run(me *Node) (*Node, error) {
 	}
 	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Minute)
 	defer cancelFunc()
-	err := wait.PollUntil(2*time.Second, configFunc, ctx.Done())
+	err := wait.PollUntilContextCancel(ctx, 2*time.Second, true, configFunc)
 	if err != nil {
 		glog.Errorf("Failed polling: %v", err)
 		return nil, err
@@ -335,7 +337,7 @@ func testAndWaitConnection(ctx context.Context, addr string, maxWait time.Durati
 		currentTime := time.Now()
 		timeout := waitTime - startTime.Sub(currentTime)
 		if timeout <= 0 {
-			return errors.New("Timeout reached")
+			return errors.New("timeout reached")
 		}
 		dialer := &radix.Dialer{
 			NetDialer: &net.Dialer{
@@ -365,15 +367,24 @@ func testAndWaitConnection(ctx context.Context, addr string, maxWait time.Durati
 
 func getRedisNodesAddrs(kubeClient clientset.Interface, namespace, service string) ([]string, error) {
 	addrs := []string{}
-	eps, err := kubeClient.CoreV1().Endpoints(namespace).Get(context.Background(), service, metav1.GetOptions{})
+	endpointSlices, err := kubeClient.DiscoveryV1().EndpointSlices(namespace).List(context.Background(),
+		metav1.ListOptions{LabelSelector: discoveryv1.LabelServiceName + "=" + service})
 	if err != nil {
 		return addrs, err
 	}
 
-	for _, subset := range eps.Subsets {
-		for _, host := range subset.Addresses {
-			for _, port := range subset.Ports {
-				addrs = append(addrs, net.JoinHostPort(host.IP, strconv.Itoa(int(port.Port))))
+	for _, endpointSlice := range endpointSlices.Items {
+		for _, endpoint := range endpointSlice.Endpoints {
+			// Only include ready endpoints to avoid circular dependencies
+			if endpoint.Conditions.Ready != nil && !*endpoint.Conditions.Ready {
+				continue
+			}
+			for _, port := range endpointSlice.Ports {
+				for _, address := range endpoint.Addresses {
+					if port.Port != nil {
+						addrs = append(addrs, net.JoinHostPort(address, strconv.Itoa(int(*port.Port))))
+					}
+				}
 			}
 		}
 	}

@@ -48,7 +48,7 @@ spec:
           - name: NAMESPACE
             value: {{ .Release.Namespace | quote }}
           - name: LEADERELECTION_ENABLED
-            value: {{ if gt .Values.replicaCount 1.0 }}"true"{{ else }}"false"{{ end }}
+            value: {{ if gt (int .Values.replicaCount) 1 }}"true"{{ else }}"false"{{ end }}
           args: [{{- include "operator-for-redis.arglist" . | nindent 12 }}]
           {{- with .Values.securityContext }}
           securityContext:

@@ -82,11 +82,11 @@ func watchRedisCluster(client kclient.Client, rClient *rest.RESTClient, cluster 
 		options,
 	)
 
-	_, controller := cache.NewInformer(
-		watchlist,
-		&rapi.RedisCluster{},
-		0*time.Second,
-		cache.ResourceEventHandlerFuncs{
+	_, controller := cache.NewInformerWithOptions(cache.InformerOptions{
+		ListerWatcher: watchlist,
+		ObjectType:    &rapi.RedisCluster{},
+		ResyncPeriod:  0 * time.Second,
+		Handler: cache.ResourceEventHandlerFuncs{
 			UpdateFunc: func(oldObj interface{}, newObj interface{}) {
 				if newCluster, ok := newObj.(*rapi.RedisCluster); ok {
 					k8sNodes, err := utils.GetKubeNodes(context.Background(), client, cluster.Spec.PodTemplate.Spec.NodeSelector)
@@ -97,7 +97,7 @@ func watchRedisCluster(client kclient.Client, rClient *rest.RESTClient, cluster 
 				}
 			},
 		},
-	)
+	})
 	stop := make(chan struct{})
 	go controller.Run(stop)
 	return stop

@@ -79,9 +79,10 @@ func (pi *PodInfo) populateMemoryStats(lines []string) {
 			pi.maxMemory = getInfoValueString(line)
 		} else if pi.role == "" && strings.Contains(line, "role:") {
 			pi.role = getInfoValueString(line)
-			if pi.role == "master" {
+			switch pi.role {
+			case "master":
 				pi.role = string(rapi.RedisClusterNodeRolePrimary)
-			} else if pi.role == "slave" {
+			case "slave":
 				pi.role = string(rapi.RedisClusterNodeRoleReplica)
 			}
 		}

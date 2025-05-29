@@ -19,7 +19,7 @@ func RunSanityChecks(ctx context.Context, admin redis.AdminInterface, config *co
 		return false, nil
 	}
 	// * fix failed nodes: in some cases (cluster without enough primary after crash or scale down), some nodes may still know about fail nodes
-	if actionDone, err = FixFailedNodes(ctx, admin, cluster, infos, dryRun); err != nil {
+	if actionDone, err := FixFailedNodes(ctx, admin, cluster, infos, dryRun); err != nil {
 		return actionDone, err
 	} else if actionDone {
 		glog.V(2).Infof("FixFailedNodes executed an action on the cluster (dryRun: %v)", dryRun)
@@ -27,7 +27,7 @@ func RunSanityChecks(ctx context.Context, admin redis.AdminInterface, config *co
 	}
 
 	// forget nodes and delete pods when a redis node is untrusted.
-	if actionDone, err = FixUntrustedNodes(ctx, admin, podControl, cluster, infos, dryRun); err != nil {
+	if actionDone, err := FixUntrustedNodes(ctx, admin, podControl, cluster, infos, dryRun); err != nil {
 		return actionDone, err
 	} else if actionDone {
 		glog.V(2).Infof("FixUntrustedNodes executed an action on the cluster (dryRun: %v)", dryRun)
@@ -35,7 +35,7 @@ func RunSanityChecks(ctx context.Context, admin redis.AdminInterface, config *co
 	}
 
 	// delete pods that are stuck in terminating state
-	if actionDone, err = FixTerminatingPods(cluster, podControl, 1*time.Minute, dryRun); err != nil {
+	if actionDone, err := FixTerminatingPods(cluster, podControl, 1*time.Minute, dryRun); err != nil {
 		return actionDone, err
 	} else if actionDone {
 		glog.V(2).Infof("FixTerminatingPods executed an action on the cluster (dryRun: %v)", dryRun)
@@ -43,12 +43,12 @@ func RunSanityChecks(ctx context.Context, admin redis.AdminInterface, config *co
 	}
 
 	// detect and fix cluster split
-	if actionDone, err = FixClusterSplit(ctx, admin, config, infos, dryRun); err != nil {
+	if actionDone, err := FixClusterSplit(ctx, admin, config, infos, dryRun); err != nil {
 		return actionDone, err
 	} else if actionDone {
 		glog.V(2).Infof("FixClusterSplit executed an action on the cluster (dryRun: %v)", dryRun)
 		return actionDone, nil
 	}
 
-	return actionDone, err
+	return actionDone, nil
 }

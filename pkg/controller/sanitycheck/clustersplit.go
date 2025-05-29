@@ -36,7 +36,7 @@ func reassignClusters(ctx context.Context, admin redis.AdminInterface, config *c
 	mainCluster, badClusters := splitMainCluster(clusters)
 	if len(mainCluster) == 0 {
 		glog.Error("[SanityChecks] Impossible to fix cluster split, cannot elect main cluster")
-		return fmt.Errorf("Impossible to fix cluster split, cannot elect main cluster")
+		return fmt.Errorf("impossible to fix cluster split, cannot elect main cluster")
 	}
 	glog.Infof("[SanityChecks] Cluster '%s' is elected as main cluster", mainCluster)
 	// reset admin to connect to the correct cluster

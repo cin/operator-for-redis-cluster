@@ -85,7 +85,7 @@ func (c *GarbageCollector) collectRedisClusterPods() error {
 	for _, pod := range pods.Items {
 		redisclusterName, found := pod.Labels[rapi.ClusterNameLabelKey]
 		if !found || len(redisclusterName) == 0 {
-			errs = append(errs, fmt.Errorf("Unable to find rediscluster name for pod: %s/%s", pod.Namespace, pod.Name))
+			errs = append(errs, fmt.Errorf("unable to find rediscluster name for pod: %s/%s", pod.Namespace, pod.Name))
 			continue
 		}
 		if _, done := collected[path.Join(pod.Namespace, redisclusterName)]; done {
@@ -95,7 +95,7 @@ func (c *GarbageCollector) collectRedisClusterPods() error {
 		err := c.kubeClient.Get(context.Background(), types.NamespacedName{Namespace: pod.Namespace, Name: redisclusterName}, &rapi.RedisCluster{})
 		if err == nil || !apierrors.IsNotFound(err) {
 			if err != nil {
-				errs = append(errs, fmt.Errorf("Unexpected error retrieving rediscluster %s/%s for pod %s/%s: %v", pod.Namespace, redisclusterName, pod.Namespace, pod.Name, err))
+				errs = append(errs, fmt.Errorf("unexpected error retrieving rediscluster %s/%s for pod %s/%s: %v", pod.Namespace, redisclusterName, pod.Namespace, pod.Name, err))
 			}
 			continue
 		}
@@ -110,7 +110,7 @@ func (c *GarbageCollector) collectRedisClusterPods() error {
 			client.PropagationPolicy(metav1.DeletePropagationBackground),
 		)
 		if err != nil {
-			errs = append(errs, fmt.Errorf("Unable to delete Collection of pods for rediscluster %s/%s", pod.Namespace, redisclusterName))
+			errs = append(errs, fmt.Errorf("unable to delete Collection of pods for rediscluster %s/%s", pod.Namespace, redisclusterName))
 			continue
 		}
 		collected[path.Join(pod.Namespace, redisclusterName)] = struct{}{} // inserted in the collected map
@@ -132,7 +132,7 @@ func (c *GarbageCollector) collectRedisClusterServices() error {
 	for _, service := range services.Items {
 		clusterName, found := service.Labels[rapi.ClusterNameLabelKey]
 		if !found || len(clusterName) == 0 {
-			errs = append(errs, fmt.Errorf("Unable to find rediscluster name for service: %s/%s", service.Namespace, service.Name))
+			errs = append(errs, fmt.Errorf("unable to find rediscluster name for service: %s/%s", service.Namespace, service.Name))
 			continue
 		}
 		if _, done := collected[path.Join(service.Namespace, clusterName)]; done {
@@ -141,13 +141,13 @@ func (c *GarbageCollector) collectRedisClusterServices() error {
 		err = c.kubeClient.Get(context.Background(), types.NamespacedName{Namespace: service.Namespace, Name: clusterName}, &rapi.RedisCluster{})
 		if err == nil || !apierrors.IsNotFound(err) {
 			if err != nil {
-				errs = append(errs, fmt.Errorf("Unexpected error retrieving rediscluster %s/%s cache: %v", service.Namespace, clusterName, err))
+				errs = append(errs, fmt.Errorf("unexpected error retrieving rediscluster %s/%s cache: %v", service.Namespace, clusterName, err))
 			}
 			continue
 		}
 		// NotFound error: Hence remove all the pods.
 		if err := c.deleteRedisClusterServices(service.Namespace, clusterName); err != nil {
-			errs = append(errs, fmt.Errorf("Unable to delete Collection of services for rediscluster %s/%s", service.Namespace, clusterName))
+			errs = append(errs, fmt.Errorf("unable to delete Collection of services for rediscluster %s/%s", service.Namespace, clusterName))
 			continue
 		}
 

@@ -127,7 +127,7 @@ func TestNewRedisServer(t *testing.T) {
 
 	for i, tt := range testCases {
 		// write to fake redis
-		fmt.Fprintf(conn, tt.input)
+		fmt.Fprint(conn, tt.input)
 
 		//read from fake redis
 		var message []string

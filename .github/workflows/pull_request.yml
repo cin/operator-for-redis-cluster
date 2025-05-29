@@ -6,26 +6,26 @@ on:
       - main
 
 env:
-  GO_VERSION: ^1.20
-  HELM_VERSION: v3.11.2
-  PYTHON_VERSION: 3.7 # required for helm tester
+  GO_VERSION: '1.24'
+  HELM_VERSION: v3.18.0
+  PYTHON_VERSION: '3.12' # required for helm tester
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v4
         with:
-          args: --timeout=3m --enable exportloopref
+          args: --timeout=3m --enable copyloopvar --out-format colored-line-number
           skip-pkg-cache: true
           skip-build-cache: true
       
@@ -37,15 +37,15 @@ jobs:
     needs: run-tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build operator image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
-          tags: ibmcom/operator-for-redis:local
+          tags: cinple/operator-for-redis-cluster-operator:local
           file: Dockerfile.operator
 
   build-cluster-node:
@@ -53,15 +53,15 @@ jobs:
     needs: run-tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build redis node image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
-          tags: ibmcom/node-for-redis:local
+          tags: cinple/operator-for-redis-cluster-node:local
           file: Dockerfile.node
 
   build-metrics:
@@ -69,15 +69,15 @@ jobs:
     needs: run-tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build redis metrics image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
-          tags: ibmcom/metrics-for-redis:local
+          tags: cinple/operator-for-redis-cluster-metrics:local
           file: Dockerfile.metrics
 
   validate-helm-charts:
@@ -85,22 +85,22 @@ jobs:
     needs: run-tests
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # ct needs history to compare
 
       - name: Setup Helm
-        uses: azure/setup-helm@v3.5
+        uses: azure/setup-helm@v4
         with:
           version: ${{ env.HELM_VERSION }}
 
       - name: Setup Python
-        uses: actions/setup-python@v4.7.0
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        uses: helm/chart-testing-action@v2.6.0
 
       - name: Run chart-testing (list-changed)
         id: list-changed
@@ -116,11 +116,11 @@ jobs:
   check-docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16.17.1 # This is recommended LTS version which includes npm 6.14.10
+          node-version: 22.x # Latest LTS
       - name: Build docs website
         run: |
           npm -v
@@ -135,35 +135,40 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        kubernetes-version: [ "1.26" ] #, "1.25", "1.24", "1.23"]
+        kubernetes-version: [ "1.33" ] #, "1.32", "1.31" ]
         include:
-        - kubernetes-version: "1.26"
-          kind-node: kindest/node:v1.26.6@sha256:6e2d8b28a5b601defe327b98bd1c2d1930b49e5d8c512e1895099e4504007adb
-        # - kubernetes-version: "1.25"
-        #   kind-node: kindest/node:v1.25.11@sha256:227fa11ce74ea76a0474eeefb84cb75d8dad1b08638371ecf0e86259b35be0c8
-        # - kubernetes-version: "1.24"
-        #   kind-node: kindest/node:v1.24.15@sha256:7db4f8bea3e14b82d12e044e25e34bd53754b7f2b0e9d56df21774e6f66a70ab
-        # - kubernetes-version: "1.23"
-        #   kind-node: kindest/node:v1.23.17@sha256:59c989ff8a517a93127d4a536e7014d28e235fb3529d9fba91b3951d461edfdb
+          - kubernetes-version: "1.33"
+            kind-node: kindest/node:v1.33.1@sha256:050072256b9a903bd914c0b2866828150cb229cea0efe5892e2b644d5dd3b34f
+          # - kubernetes-version: "1.32"
+          #   kind-node: kindest/node:v1.32.5@sha256:e3b2327e3a5ab8c76f5ece68936e4cafaa82edf58486b769727ab0b3b97a5b0d
+          # - kubernetes-version: "1.31"
+          #   kind-node: kindest/node:v1.31.9@sha256:b94a3a6c06198d17f59cca8c6f486236fa05e2fb359cbd75dabbfc348a10b211
+
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
 
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: ${{ env.HELM_VERSION }}
+
       - name: Build images
         run: |
-          docker build -f Dockerfile.operator -t ibmcom/operator-for-redis:local .
-          docker build -f Dockerfile.node -t ibmcom/node-for-redis:local -t ibmcom/node-for-redis:new .
-          docker build -f Dockerfile.metrics -t ibmcom/metrics-for-redis:local .
+          docker build -f Dockerfile.operator -t cinple/operator-for-redis-cluster-operator:local .
+          docker build -f Dockerfile.node -t cinple/operator-for-redis-cluster-node:local -t cinple/operator-for-redis-cluster-node:new .
+          docker build -f Dockerfile.metrics -t cinple/operator-for-redis-cluster-metrics:local .
 
       - name: kind create cluster
-        uses: helm/kind-action@v1.8.0
+        uses: helm/kind-action@v1.12.0
         with:
-          version: v0.18.0
+          version: v0.29.0
           config: ./test/e2e/kind_config.yml
           cluster_name: kind
           node_image: ${{ matrix.kind-node }}
@@ -171,14 +176,14 @@ jobs:
             
       - name: Load Images to KIND
         run: |
-          kind load docker-image ibmcom/operator-for-redis:local
-          kind load docker-image ibmcom/node-for-redis:local
-          kind load docker-image ibmcom/node-for-redis:new
-          kind load docker-image ibmcom/metrics-for-redis:local
+          kind load docker-image cinple/operator-for-redis-cluster-operator:local
+          kind load docker-image cinple/operator-for-redis-cluster-node:local
+          kind load docker-image cinple/operator-for-redis-cluster-node:new
+          kind load docker-image cinple/operator-for-redis-cluster-metrics:local
 
-      - name: Install operator-for-redis with Helm
+      - name: Install operator-for-redis-cluster with Helm
         id: helm
-        run: helm install operator-for-redis charts/operator-for-redis --wait --set image.repository=ibmcom/operator-for-redis --set image.tag=local --set logLevel=7
+        run: helm install operator-for-redis-cluster charts/operator-for-redis --wait --set image.repository=cinple/operator-for-redis-cluster-operator --set image.tag=local --set logLevel=7
       
       - name: Run e2e tests
         id: e2e
@@ -193,7 +198,7 @@ jobs:
       
       - name: Upload logs artifact
         if: ${{ always() && (steps.e2e.outcome == 'failure' || steps.helm.outcome == 'failure') }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kind-e2e-logs-${{ matrix.kubernetes-version }}.tar
           path: kind-e2e-logs-${{ matrix.kubernetes-version }}.tar

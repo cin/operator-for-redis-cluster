@@ -39,7 +39,7 @@ $ make generate
 $ make fmt
 find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$file"; goimports -w "$file"; done
 $ make lint
-golangci-lint run --enable exportloopref
+golangci-lint run --enable copyloopvar
 $ make test
 ./go.test.sh
 ...

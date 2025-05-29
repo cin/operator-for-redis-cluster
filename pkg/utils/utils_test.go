@@ -1,7 +1,6 @@
 package utils_test
 
 import (
-	"math"
 	"reflect"
 	"strconv"
 	"testing"
@@ -449,22 +448,22 @@ func TestStringToByteString(t *testing.T) {
 		{
 			name:  "megabyte",
 			value: "10m",
-			want:  strconv.Itoa(int(math.Pow(utils.Kilobyte, 2)) * 10),
+			want:  strconv.Itoa(int(utils.Kilobyte*utils.Kilobyte) * 10),
 		},
 		{
 			name:  "mebibyte",
 			value: "10mb",
-			want:  strconv.Itoa(int(math.Pow(utils.Kibibyte, 2)) * 10),
+			want:  strconv.Itoa(int(utils.Kibibyte*utils.Kibibyte) * 10),
 		},
 		{
 			name:  "gigabyte",
 			value: "10g",
-			want:  strconv.Itoa(int(math.Pow(utils.Kilobyte, 3)) * 10),
+			want:  strconv.Itoa(int(utils.Kilobyte*utils.Kilobyte*utils.Kilobyte) * 10),
 		},
 		{
 			name:  "gibibyte",
 			value: "10gb",
-			want:  strconv.Itoa(int(math.Pow(utils.Kibibyte, 3)) * 10),
+			want:  strconv.Itoa(int(utils.Kibibyte*utils.Kibibyte*utils.Kibibyte) * 10),
 		},
 		{
 			name:  "capital unit",

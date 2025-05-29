@@ -29,7 +29,7 @@ func TestSlotRangeDecode(t *testing.T) {
 			continue
 		}
 		if !reflect.DeepEqual(result, tt.slots) {
-			if !(len(tt.slots) == 0 && len(result) == 0) {
+			if len(tt.slots) != 0 || len(result) != 0 {
 				t.Errorf("expected result to be '%s', got '%s'", tt.slots, result)
 			}
 		}

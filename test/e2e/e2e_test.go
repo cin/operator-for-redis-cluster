@@ -3,6 +3,7 @@ package e2e
 import (
 	goflag "flag"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/golang/glog"
@@ -15,9 +16,20 @@ func TestE2E(t *testing.T) {
 	RunE2ETests(t)
 }
 
+func getDefaultKubeConfig() string {
+	if v, ok := os.LookupEnv("KUBECONFIG"); ok {
+		return v
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(home, ".kube", "config")
+}
+
 func TestMain(m *testing.M) {
 
-	pflag.StringVar(&framework.FrameworkContext.KubeConfigPath, "kubeconfig", "", "Path to kubeconfig")
+	pflag.StringVar(&framework.FrameworkContext.KubeConfigPath, "kubeconfig", getDefaultKubeConfig(), "Path to kubeconfig")
 	pflag.StringVar(&framework.FrameworkContext.ImageTag, "image-tag", "local", "image tag")
 	pflag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	pflag.Parse()

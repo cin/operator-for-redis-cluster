@@ -34,7 +34,10 @@ func (c *Controller) clusterAction(ctx context.Context, admin redis.AdminInterfa
 	}
 	if needSanity {
 		glog.V(3).Infof("[clusterAction] run sanity check cluster: %s/%s", cluster.Namespace, cluster.Name)
-		result.Requeue, err = sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, false)
+		requeue, err := sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, false)
+		if requeue {
+			result.RequeueAfter = time.Second
+		}
 		return result, err
 	}
 
@@ -44,7 +47,7 @@ func (c *Controller) clusterAction(ctx context.Context, admin redis.AdminInterfa
 		return result, err
 	}
 
-	glog.V(6).Infof("[clusterAction] cluster change for RedisCluster %s/%s: %v", cluster.Namespace, cluster.Name, result.Requeue)
+	glog.V(6).Infof("[clusterAction] cluster change for RedisCluster %s/%s: %v", cluster.Namespace, cluster.Name, result.RequeueAfter)
 	return result, nil
 }
 
@@ -86,7 +89,10 @@ func (c *Controller) applyConfiguration(ctx context.Context, admin redis.AdminIn
 	}
 	if c.needsLessPods(cluster) {
 		glog.Info("applyConfiguration needLessPods")
-		result.Requeue, err = c.managePodScaleDown(ctx, admin, cluster, newCluster, nodes)
+		requeue, err := c.managePodScaleDown(ctx, admin, cluster, newCluster, nodes)
+		if requeue {
+			result.RequeueAfter = time.Second
+		}
 		return result, err
 	}
 
@@ -96,11 +102,13 @@ func (c *Controller) applyConfiguration(ctx context.Context, admin redis.AdminIn
 		return result, err
 	}
 
-	result.Requeue, err = scalingOperations(ctx, admin, cluster, newCluster, nodes)
+	requeue, err := scalingOperations(ctx, admin, cluster, newCluster, nodes)
 	if err != nil {
 		return result, err
 	}
-
+	if requeue {
+		result.RequeueAfter = time.Second
+	}
 	glog.V(4).Infof("new nodes status: \n %v", nodes)
 
 	cluster.Status.Cluster.Status = rapi.ClusterStatusOK

@@ -97,7 +97,8 @@ func (c *Controller) Reconcile(ctx context.Context, namespacedName ctrl.Request)
 
 	if !rapi.IsRedisClusterDefaulted(sharedRedisCluster) {
 		defaultedRedisCluster := rapi.DefaultRedisCluster(sharedRedisCluster)
-		if result.Requeue = c.updateRedisClusterSpec(defaultedRedisCluster); result.Requeue {
+		if c.updateRedisClusterSpec(defaultedRedisCluster) {
+			result.RequeueAfter = time.Second
 			return result, nil
 		}
 		glog.V(6).Infof("RedisCluster %s correctly defaulted", namespacedName)
@@ -112,7 +113,8 @@ func (c *Controller) Reconcile(ctx context.Context, namespacedName ctrl.Request)
 	// init status.StartTime
 	if redisCluster.Status.StartTime == nil {
 		redisCluster.Status.StartTime = &startTime
-		if result.Requeue = c.updateRedisClusterStatus(ctx, redisCluster); result.Requeue {
+		if c.updateRedisClusterStatus(ctx, redisCluster) {
+			result.RequeueAfter = time.Second
 			return result, nil
 		}
 		glog.V(4).Infof("startTime updated for RedisCluster %s", namespacedName)
@@ -309,14 +311,16 @@ func (c *Controller) syncCluster(ctx context.Context, redisCluster *rapi.RedisCl
 				return result, err
 			}
 			if c.updateClusterStatus(ctx, redisCluster) {
-				result.Requeue = true
+				result.RequeueAfter = time.Second
 			}
 			return result, nil
 		}
 	}
 
 	setClusterStatusCondition(&redisCluster.Status, true)
-	result.Requeue = c.updateClusterStatus(ctx, redisCluster)
+	if c.updateClusterStatus(ctx, redisCluster) {
+		result.RequeueAfter = time.Second
+	}
 	return result, nil
 }
 

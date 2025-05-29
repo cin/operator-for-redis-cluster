@@ -311,7 +311,8 @@ func writeErr(w io.Writer, buf []byte, ierr error) (int64, error) {
 	var err error
 	var written int64
 	written, err = writeBytesHelper(w, errPrefix, written, err)
-	written, err = writeBytesHelper(w, []byte(ierr.Error()), written, err)
+	buf = append(buf[:0], ierr.Error()...)
+	written, err = writeBytesHelper(w, buf, written, err)
 	written, err = writeBytesHelper(w, delim, written, err)
 	return written, err
 }
