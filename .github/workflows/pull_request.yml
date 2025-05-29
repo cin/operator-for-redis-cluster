@@ -154,6 +154,11 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
 
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: ${{ env.HELM_VERSION }}
+
       - name: Build images
         run: |
           docker build -f Dockerfile.operator -t ibmcom/operator-for-redis-cluster-operator:local .
@@ -178,7 +183,7 @@ jobs:
 
       - name: Install operator-for-redis-cluster with Helm
         id: helm
-        run: helm install operator-for-redis-cluster charts/operator-for-redis-cluster --wait --set image.repository=ibmcom/operator-for-redis-cluster-operator --set image.tag=local --set logLevel=7
+        run: helm install operator-for-redis-cluster charts/operator-for-redis --wait --set image.repository=ibmcom/operator-for-redis-cluster-operator --set image.tag=local --set logLevel=7
       
       - name: Run e2e tests
         id: e2e

@@ -86,9 +86,9 @@ $ kind load docker-image ibmcom/operator-for-redis-cluster-metrics:latest
 
 ### Deploy a Redis operator
 
-Install the `operator-for-redis-cluster` Helm chart:
+Install the `operator-for-redis` Helm chart:
 ```console
-$ helm install op charts/operator-for-redis-cluster --wait --set image.repository=ibmcom/operator-for-redis-cluster-operator --set image.tag=latest
+$ helm install op charts/operator-for-redis --wait --set image.repository=ibmcom/operator-for-redis-cluster-operator --set image.tag=latest
 NAME: op
 LAST DEPLOYED: <date>
 NAMESPACE: default
