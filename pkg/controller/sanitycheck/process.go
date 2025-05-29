@@ -14,41 +14,41 @@ import (
 
 // RunSanityChecks function used to run all the sanity check on the current cluster
 // Return actionDone = true if a modification has been made on the cluster
-func RunSanityChecks(ctx context.Context, admin redis.AdminInterface, config *config.Redis, podControl pod.RedisClusterControlInterface, cluster *rapi.RedisCluster, infos *redis.ClusterInfos, dryRun bool) (time.Duration, error) {
+func RunSanityChecks(ctx context.Context, admin redis.AdminInterface, config *config.Redis, podControl pod.RedisClusterControlInterface, cluster *rapi.RedisCluster, infos *redis.ClusterInfos, dryRun bool) (actionDone bool, err error) {
 	if cluster.Status.Cluster.Status == rapi.ClusterStatusRollingUpdate {
-		return time.Second, nil
+		return false, nil
 	}
 	// * fix failed nodes: in some cases (cluster without enough primary after crash or scale down), some nodes may still know about fail nodes
 	if actionDone, err := FixFailedNodes(ctx, admin, cluster, infos, dryRun); err != nil {
-		return time.Second, err
+		return actionDone, err
 	} else if actionDone {
 		glog.V(2).Infof("FixFailedNodes executed an action on the cluster (dryRun: %v)", dryRun)
-		return time.Second, nil
+		return actionDone, nil
 	}
 
 	// forget nodes and delete pods when a redis node is untrusted.
 	if actionDone, err := FixUntrustedNodes(ctx, admin, podControl, cluster, infos, dryRun); err != nil {
-		return time.Second, err
+		return actionDone, err
 	} else if actionDone {
 		glog.V(2).Infof("FixUntrustedNodes executed an action on the cluster (dryRun: %v)", dryRun)
-		return time.Second, nil
+		return actionDone, nil
 	}
 
 	// delete pods that are stuck in terminating state
 	if actionDone, err := FixTerminatingPods(cluster, podControl, 1*time.Minute, dryRun); err != nil {
-		return time.Second, err
+		return actionDone, err
 	} else if actionDone {
 		glog.V(2).Infof("FixTerminatingPods executed an action on the cluster (dryRun: %v)", dryRun)
-		return time.Second, nil
+		return actionDone, nil
 	}
 
 	// detect and fix cluster split
 	if actionDone, err := FixClusterSplit(ctx, admin, config, infos, dryRun); err != nil {
-		return time.Second, err
+		return actionDone, err
 	} else if actionDone {
 		glog.V(2).Infof("FixClusterSplit executed an action on the cluster (dryRun: %v)", dryRun)
-		return time.Second, nil
+		return actionDone, nil
 	}
 
-	return 0, nil
+	return actionDone, nil
 }

@@ -27,14 +27,17 @@ func (c *Controller) clusterAction(ctx context.Context, admin redis.AdminInterfa
 	var err error
 	result := ctrl.Result{}
 	// run sanity check if needed
-	dur, err := sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, true)
+	needSanity, err := sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, true)
 	if err != nil {
 		glog.Errorf("[clusterAction] cluster %s/%s, an error occurs during sanity check: %v ", cluster.Namespace, cluster.Name, err)
 		return result, err
 	}
-	if dur > 0 {
+	if needSanity {
 		glog.V(3).Infof("[clusterAction] run sanity check cluster: %s/%s", cluster.Namespace, cluster.Name)
-		result.RequeueAfter, err = sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, false)
+		requeue, err := sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, false)
+		if requeue {
+			result.RequeueAfter = time.Second
+		}
 		return result, err
 	}
 
@@ -86,7 +89,10 @@ func (c *Controller) applyConfiguration(ctx context.Context, admin redis.AdminIn
 	}
 	if c.needsLessPods(cluster) {
 		glog.Info("applyConfiguration needLessPods")
-		result.RequeueAfter, err = c.managePodScaleDown(ctx, admin, cluster, newCluster, nodes)
+		requeue, err := c.managePodScaleDown(ctx, admin, cluster, newCluster, nodes)
+		if requeue {
+			result.RequeueAfter = time.Second
+		}
 		return result, err
 	}
 
@@ -170,34 +176,34 @@ func (c *Controller) manageRollingUpdate(ctx context.Context, admin redis.AdminI
 }
 
 // managePodScaleDown used to manage the scale down of a cluster
-func (c *Controller) managePodScaleDown(ctx context.Context, admin redis.AdminInterface, cluster *rapi.RedisCluster, newCluster *redis.Cluster, nodes redis.Nodes) (time.Duration, error) {
+func (c *Controller) managePodScaleDown(ctx context.Context, admin redis.AdminInterface, cluster *rapi.RedisCluster, newCluster *redis.Cluster, nodes redis.Nodes) (bool, error) {
 	glog.V(6).Info("managePodScaleDown START")
 	defer glog.V(6).Info("managePodScaleDown STOP")
 	if nodesToDelete, ok := shouldDeleteNodes(cluster, newCluster); ok {
-		return time.Second, c.deletePods(cluster, nodesToDelete)
+		return false, c.deletePods(cluster, nodesToDelete)
 	}
 
 	if replicasOfReplica, ok := checkReplicasOfReplica(cluster); !ok {
 		glog.V(6).Info("checkReplicasOfReplica NOT OK")
 		c.removeReplicasOfReplica(ctx, admin, cluster, nodes, replicasOfReplica)
-		return time.Second, nil
+		return true, nil
 	}
 
 	if nbPrimaryToDelete, ok := checkNumberOfPrimaries(cluster); !ok {
 		glog.V(6).Info("checkNumberOfPrimaries NOT OK")
 		if err := c.scaleDownPrimaries(ctx, admin, cluster, newCluster, nodes, nbPrimaryToDelete); err != nil {
-			return time.Second, err
+			return false, err
 		}
 	}
 
 	if primaryToReplicas, ok := checkReplicationFactor(cluster, newCluster); !ok {
 		glog.V(6).Info("checkReplicationFactor NOT OK")
 		if err := c.reconcileReplicationFactor(ctx, admin, cluster, newCluster, nodes, primaryToReplicas); err != nil {
-			return time.Second, err
+			return false, err
 		}
 	}
 
-	return 0, nil
+	return false, nil
 }
 
 func (c *Controller) needsRollingUpdate(cluster *rapi.RedisCluster) bool {

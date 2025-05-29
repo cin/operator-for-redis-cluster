@@ -97,8 +97,8 @@ func (c *Controller) Reconcile(ctx context.Context, namespacedName ctrl.Request)
 
 	if !rapi.IsRedisClusterDefaulted(sharedRedisCluster) {
 		defaultedRedisCluster := rapi.DefaultRedisCluster(sharedRedisCluster)
-		if dur := c.updateRedisClusterSpec(defaultedRedisCluster); dur > 0 {
-			result.RequeueAfter = dur
+		if c.updateRedisClusterSpec(defaultedRedisCluster) {
+			result.RequeueAfter = time.Second
 			return result, nil
 		}
 		glog.V(6).Infof("RedisCluster %s correctly defaulted", namespacedName)
@@ -113,8 +113,8 @@ func (c *Controller) Reconcile(ctx context.Context, namespacedName ctrl.Request)
 	// init status.StartTime
 	if redisCluster.Status.StartTime == nil {
 		redisCluster.Status.StartTime = &startTime
-		if dur := c.updateRedisClusterStatus(ctx, redisCluster); dur > 0 {
-			result.RequeueAfter = dur
+		if c.updateRedisClusterStatus(ctx, redisCluster) {
+			result.RequeueAfter = time.Second
 			return result, nil
 		}
 		glog.V(4).Infof("startTime updated for RedisCluster %s", namespacedName)
@@ -305,66 +305,65 @@ func (c *Controller) syncCluster(ctx context.Context, redisCluster *rapi.RedisCl
 			glog.Warningf("Node zones are not balanced. Trigger a rolling update to force reschedule redis pods.")
 			c.recorder.Event(redisCluster, v1.EventTypeWarning, "UnbalancedZones", "Zones are unbalanced")
 		}
-		if needClusterOperation(redisCluster) || needSanitize > 0 {
+		if needClusterOperation(redisCluster) || needSanitize {
 			result, err = c.clusterAction(ctx, admin, redisCluster, clusterInfos)
 			if err != nil {
 				return result, err
 			}
-			if dur := c.updateClusterStatus(ctx, redisCluster); dur > 0 {
-				result.RequeueAfter = dur
-			}
-			if needSanitize > 0 {
-				result.RequeueAfter = needSanitize
+			if c.updateClusterStatus(ctx, redisCluster) {
+				result.RequeueAfter = time.Second
 			}
 			return result, nil
 		}
 	}
 
 	setClusterStatusCondition(&redisCluster.Status, true)
-	result.RequeueAfter = c.updateClusterStatus(ctx, redisCluster)
+	if c.updateClusterStatus(ctx, redisCluster) {
+		result.RequeueAfter = time.Second
+	}
 	return result, nil
 }
 
-func (c *Controller) updateRedisClusterSpec(desiredCluster *rapi.RedisCluster) time.Duration {
+func (c *Controller) updateRedisClusterSpec(desiredCluster *rapi.RedisCluster) bool {
 	ctx := context.Background()
 	actualCluster, err := c.getRedisCluster(ctx, desiredCluster.Namespace, desiredCluster.Name)
 	if err != nil {
 		glog.Errorf("failed to get RedisCluster %s/%s: %v", desiredCluster.Namespace, desiredCluster.Name, err)
-		return time.Second
+		return false
 	}
 	actualCluster.Spec = desiredCluster.Spec
 	if err = c.client.Update(ctx, actualCluster); err != nil {
 		if errors.IsConflict(err) {
 			glog.V(6).Infof("conflict occurred when updating RedisCluster %s/%s", desiredCluster.Namespace, desiredCluster.Name)
-			return time.Second
+			return true
 		}
 		glog.Errorf("failed to update RedisCluster %s/%s: %v", desiredCluster.Name, desiredCluster.Namespace, err)
-		return time.Second
+		return true
 	}
 
 	glog.V(6).Infof("RedisCluster %s/%s updated", desiredCluster.Namespace, desiredCluster.Name)
-	return 0
+	return false
 }
 
-func (c *Controller) updateRedisClusterStatus(ctx context.Context, redisCluster *rapi.RedisCluster) time.Duration {
+func (c *Controller) updateRedisClusterStatus(ctx context.Context, redisCluster *rapi.RedisCluster) bool {
 	if err := c.client.Status().Update(ctx, redisCluster); err != nil {
 		if errors.IsConflict(err) {
 			glog.V(6).Infof("conflict occurred when updating RedisCluster %s/%s", redisCluster.Namespace, redisCluster.Name)
-			return time.Second
+			return true
 		}
 		glog.Errorf("failed to update RedisCluster %s/%s: %v", redisCluster.Namespace, redisCluster.Name, err)
-		return time.Second
+		return true
 	}
 
 	glog.V(6).Infof("RedisCluster %s/%s updated", redisCluster.Namespace, redisCluster.Name)
-	return 0
+	return false
 }
 
-func (c *Controller) updateClusterStatus(ctx context.Context, desiredCluster *rapi.RedisCluster) time.Duration {
+func (c *Controller) updateClusterStatus(ctx context.Context, desiredCluster *rapi.RedisCluster) bool {
 	actualCluster, err := c.getRedisCluster(ctx, desiredCluster.Namespace, desiredCluster.Name)
 	if err != nil {
 		glog.Errorf("failed to get RedisCluster %s/%s: %v", desiredCluster.Namespace, desiredCluster.Name, err)
-		return 0
+		return true
 	}
 	if compareStatus(&actualCluster.Status, &desiredCluster.Status) {
 		glog.V(3).Infof("status changed for RedisCluster %s/%s", actualCluster.Namespace, actualCluster.Name)
@@ -372,7 +371,7 @@ func (c *Controller) updateClusterStatus(ctx context.Context, desiredCluster *ra
 		actualCluster.Status = desiredCluster.Status
 		return c.updateRedisClusterStatus(ctx, actualCluster)
 	}
-	return 0
+	return false
 }
 
 func (c *Controller) buildClusterState(cluster *rapi.RedisCluster, clusterInfos *redis.ClusterInfos, pods []v1.Pod, kubeNodes []v1.Node) (*rapi.RedisClusterState, error) {
@@ -390,7 +389,7 @@ func (c *Controller) buildClusterState(cluster *rapi.RedisCluster, clusterInfos 
 	return clusterState, nil
 }
 
-func (c *Controller) checkSanity(ctx context.Context, cluster *rapi.RedisCluster, admin redis.AdminInterface, infos *redis.ClusterInfos) (time.Duration, error) {
+func (c *Controller) checkSanity(ctx context.Context, cluster *rapi.RedisCluster, admin redis.AdminInterface, infos *redis.ClusterInfos) (bool, error) {
 	return sanitycheck.RunSanityChecks(ctx, admin, &c.config.redis, c.podControl, cluster, infos, true)
 }
 
