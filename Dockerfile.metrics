@@ -8,6 +8,7 @@ ARG GOPROXY=direct
 ARG BUILDTIME
 ARG OPERATOR_VERSION
 ARG REVISION
+ARG TARGETPLATFORM
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV INSTALL_DIRECTORY=/usr/local/bin
@@ -28,8 +29,16 @@ COPY api/ api/
 COPY pkg/ pkg/
 COPY cmd/metrics/main.go ./
 
-# Build
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+# Build for target platform
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg/mod \
+    case "${TARGETPLATFORM}" in \
+      "linux/amd64") export GOARCH=amd64 ;; \
+      "linux/arm64") export GOARCH=arm64 ;; \
+      "linux/arm/v7") export GOARCH=arm ;; \
+      *) echo "Unsupported platform ${TARGETPLATFORM}" && exit 1 ;; \
+    esac && \
+    CGO_ENABLED=0 GOOS=linux GOARCH=${GOARCH} \
     go build \
     -ldflags "-w -s \
       -X github.com/IBM/operator-for-redis-cluster/pkg/utils.BUILDTIME=$BUILDTIME \

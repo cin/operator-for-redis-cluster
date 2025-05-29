@@ -40,6 +40,9 @@ buildlinux-%: ${SOURCES}
 container-%: buildlinux-%
 	docker buildx build --platform $(PLATFORM) -t $(PREFIX)operator-for-redis-cluster-$*:$(TAG) -f Dockerfile.$* . --load
 
+container-push-%: 
+	docker buildx build --platform linux/amd64,linux/arm64 -t $(PREFIX)operator-for-redis-cluster-$*:$(TAG) -f Dockerfile.$* . --push
+
 load-%: container-%
 	kind load docker-image $(PREFIX)operator-for-redis-cluster-$*:$(TAG)
 
@@ -48,6 +51,8 @@ build: $(addprefix build-,$(CMDBINS))
 buildlinux: $(addprefix buildlinux-,$(CMDBINS))
 
 container: $(addprefix container-,$(CMDBINS))
+
+container-push: $(addprefix container-push-,$(CMDBINS))
 
 load: $(addprefix load-,$(CMDBINS))
 
@@ -96,4 +101,4 @@ lint:
 	golangci-lint run --enable exportloopref
 .PHONY: lint
 
-.PHONY: build push clean test
+.PHONY: build push clean test container-push
