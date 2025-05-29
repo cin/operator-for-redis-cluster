@@ -167,13 +167,13 @@ func StringToByteString(value string) (string, error) {
 	case "kb":
 		result *= Kibibyte
 	case "m":
-		result *= int64(math.Pow(Kilobyte, 2))
+		result *= int64(Kilobyte * Kilobyte)
 	case "mb":
-		result *= int64(math.Pow(Kibibyte, 2))
+		result *= int64(Kibibyte * Kibibyte)
 	case "g":
-		result *= int64(math.Pow(Kilobyte, 3))
+		result *= int64(Kilobyte * Kilobyte * Kilobyte)
 	case "gb":
-		result *= int64(math.Pow(Kibibyte, 3))
+		result *= int64(Kibibyte * Kibibyte * Kibibyte)
 	}
 	return strconv.FormatInt(result, 10), nil
 }

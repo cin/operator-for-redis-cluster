@@ -103,7 +103,6 @@ func buildRedisClusterStatuses(rcs *rapi.RedisClusterList, client kclient.Client
 	var lock = sync.Mutex{}
 	for i, cluster := range rcs.Items {
 		wg.Add(1)
-		cluster := cluster
 		index := i
 		go func() {
 			defer wg.Done()

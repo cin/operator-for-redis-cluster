@@ -437,6 +437,11 @@ func CreateRedisNodeServiceAccountFunc(kubeClient kclient.Client, redisCluster *
 						Resources: []string{"namespaces", "services", "endpoints", "pods"},
 						Verbs:     []string{"list", "get"},
 					},
+					{
+						APIGroups: []string{"discovery.k8s.io"},
+						Resources: []string{"endpointslices"},
+						Verbs:     []string{"list", "get"},
+					},
 				},
 			}
 			err = kubeClient.Create(context.Background(), cr)

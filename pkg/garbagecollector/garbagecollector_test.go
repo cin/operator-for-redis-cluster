@@ -77,7 +77,7 @@ func TestGarbageCollector_CollectRedisClusterJobs(t *testing.T) {
 				gc.kubeClient = fakeClient.Build()
 				return gc
 			},
-			errorMessage: "Unable to find rediscluster name for pod: /testpod",
+			errorMessage: "unable to find rediscluster name for pod: /testpod",
 		},
 		"error getting service with label without value": {
 			TweakGarbageCollector: func(gc *GarbageCollector) *GarbageCollector {
@@ -91,7 +91,7 @@ func TestGarbageCollector_CollectRedisClusterJobs(t *testing.T) {
 				gc.kubeClient = fakeClient.Build()
 				return gc
 			},
-			errorMessage: "Unable to find rediscluster name for service: /testservice",
+			errorMessage: "unable to find rediscluster name for service: /testservice",
 		},
 		"no rediscluster found for pod": {
 			TweakGarbageCollector: func(gc *GarbageCollector) *GarbageCollector {

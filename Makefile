@@ -98,7 +98,7 @@ fmt:
 
 # Run all the linters
 lint:
-	golangci-lint run --enable exportloopref
+	golangci-lint run --enable copyloopvar
 .PHONY: lint
 
 .PHONY: build push clean test container-push

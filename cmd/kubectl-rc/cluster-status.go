@@ -67,7 +67,6 @@ func (cs *ClusterStatus) populatePodInfoStats(restConfig *rest.Config, podInfoMa
 	wg := sync.WaitGroup{}
 	for _, pod := range podInfoMap {
 		wg.Add(1)
-		pod := pod
 		go func() {
 			defer wg.Done()
 			cs.addToPodInfo(restConfig, clientset, pod.pod, parameterCodec, podInfoMap)

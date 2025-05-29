@@ -567,7 +567,6 @@ func (a *Admin) MigrateKeys(ctx context.Context, source *Node, dest *Node, slots
 		slotSlice := slots[i:endIndex]
 		for _, slot := range slotSlice {
 			wg.Add(1)
-			slot := slot
 			go func() {
 				defer wg.Done()
 				if scaling || *spec.RollingUpdate.KeyMigration {

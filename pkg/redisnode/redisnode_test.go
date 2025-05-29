@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	kapi "k8s.io/api/core/v1"
+	discoveryv1 "k8s.io/api/discovery/v1"
 	kmetav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	kfakeclient "k8s.io/client-go/kubernetes/fake"
 
@@ -33,6 +33,10 @@ func TestTestAndWaitConnection(t *testing.T) {
 	}
 }
 
+func int32Ptr(i int32) *int32 {
+	return &i
+}
+
 func TestIsClusterInitialization(t *testing.T) {
 	currentIP := "1.2.3.4"
 	conf := Config{
@@ -42,26 +46,55 @@ func TestIsClusterInitialization(t *testing.T) {
 
 	testCases := []struct {
 		name             string
-		endpoints        kapi.Endpoints
+		endpointSlice    discoveryv1.EndpointSlice
 		isInitialization bool
 	}{
 		{
-			name:             "1) test init true",
-			endpoints:        kapi.Endpoints{ObjectMeta: kmetav1.ObjectMeta{Name: "redis-service", Namespace: "default"}, Subsets: []kapi.EndpointSubset{}}, //empty
+			name: "1) test init true",
+			endpointSlice: discoveryv1.EndpointSlice{
+				ObjectMeta: kmetav1.ObjectMeta{
+					Name:      "redis-service-slice",
+					Namespace: "default",
+					Labels:    map[string]string{discoveryv1.LabelServiceName: "redis-service"},
+				},
+				AddressType: discoveryv1.AddressTypeIPv4,
+				Endpoints:   []discoveryv1.Endpoint{}, // empty
+				Ports:       []discoveryv1.EndpointPort{{Port: int32Ptr(1234)}},
+			},
 			isInitialization: true,
 		},
 		{
 			name: "2) test init false",
-			endpoints: kapi.Endpoints{ObjectMeta: kmetav1.ObjectMeta{Name: "redis-service", Namespace: "default"}, Subsets: []kapi.EndpointSubset{
-				{Addresses: []kapi.EndpointAddress{{IP: "1.0.0.1"}, {IP: "1.0.0.2"}, {IP: "1.0.0.3"}}, Ports: []kapi.EndpointPort{{Port: 1234}}}, // full
-			}},
+			endpointSlice: discoveryv1.EndpointSlice{
+				ObjectMeta: kmetav1.ObjectMeta{
+					Name:      "redis-service-slice",
+					Namespace: "default",
+					Labels:    map[string]string{discoveryv1.LabelServiceName: "redis-service"},
+				},
+				AddressType: discoveryv1.AddressTypeIPv4,
+				Endpoints: []discoveryv1.Endpoint{
+					{Addresses: []string{"1.0.0.1"}},
+					{Addresses: []string{"1.0.0.2"}},
+					{Addresses: []string{"1.0.0.3"}},
+				},
+				Ports: []discoveryv1.EndpointPort{{Port: int32Ptr(1234)}},
+			},
 			isInitialization: false,
 		},
 		{
 			name: "3) test init true",
-			endpoints: kapi.Endpoints{ObjectMeta: kmetav1.ObjectMeta{Name: "redis-service", Namespace: "default"}, Subsets: []kapi.EndpointSubset{
-				{Addresses: []kapi.EndpointAddress{{IP: currentIP}}, Ports: []kapi.EndpointPort{{Port: 1234}}}, // only current
-			}},
+			endpointSlice: discoveryv1.EndpointSlice{
+				ObjectMeta: kmetav1.ObjectMeta{
+					Name:      "redis-service-slice",
+					Namespace: "default",
+					Labels:    map[string]string{discoveryv1.LabelServiceName: "redis-service"},
+				},
+				AddressType: discoveryv1.AddressTypeIPv4,
+				Endpoints: []discoveryv1.Endpoint{
+					{Addresses: []string{currentIP}},
+				},
+				Ports: []discoveryv1.EndpointPort{{Port: int32Ptr(1234)}},
+			},
 			isInitialization: true,
 		},
 	}
@@ -69,7 +102,7 @@ func TestIsClusterInitialization(t *testing.T) {
 	for _, tc := range testCases {
 		node := &RedisNode{
 			config:     &conf,
-			kubeClient: kfakeclient.NewSimpleClientset(&tc.endpoints),
+			kubeClient: kfakeclient.NewSimpleClientset(&tc.endpointSlice),
 		}
 		_, isInit := node.isClusterInitialization(currentIP)
 		if isInit != tc.isInitialization {
@@ -96,25 +129,24 @@ func TestRedisInitializationAttach(t *testing.T) {
 	fakeAdmin := admin.NewFakeAdmin()
 	fakeAdmin.AddrError[myIP] = errors.New("Should not call init cluster")
 
-	endpoint := kapi.Endpoints{
+	endpointSlice := discoveryv1.EndpointSlice{
 		ObjectMeta: kmetav1.ObjectMeta{
-			Name:      "redis-service",
+			Name:      "redis-service-slice",
 			Namespace: "default",
+			Labels:    map[string]string{discoveryv1.LabelServiceName: "redis-service"},
 		},
-		Subsets: []kapi.EndpointSubset{
-			{
-				Addresses: []kapi.EndpointAddress{
-					{IP: "1.1.1.1"},
-					{IP: "2.2.2.2"},
-				},
-			},
+		AddressType: discoveryv1.AddressTypeIPv4,
+		Endpoints: []discoveryv1.Endpoint{
+			{Addresses: []string{"1.1.1.1"}},
+			{Addresses: []string{"2.2.2.2"}},
 		},
+		Ports: []discoveryv1.EndpointPort{{Port: int32Ptr(1234)}},
 	}
 
 	rn := &RedisNode{
 		config:     c,
 		redisAdmin: fakeAdmin,
-		kubeClient: kfakeclient.NewSimpleClientset(&endpoint),
+		kubeClient: kfakeclient.NewSimpleClientset(&endpointSlice),
 	}
 
 	node, err := rn.init()
