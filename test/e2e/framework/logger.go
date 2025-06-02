@@ -12,7 +12,9 @@ func nowStamp() string {
 }
 
 func log(level string, format string, args ...interface{}) {
-	fmt.Fprintf(ginkgo.GinkgoWriter, nowStamp()+": "+level+": "+format+"\n", args...)
+	if _, err := fmt.Fprintf(ginkgo.GinkgoWriter, nowStamp()+": "+level+": "+format+"\n", args...); err != nil {
+		ginkgo.Fail(fmt.Sprintf("failed to log: %v", err), 1)
+	}
 }
 
 // Logf logs in e2e framework

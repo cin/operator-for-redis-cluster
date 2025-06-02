@@ -114,7 +114,11 @@ func TestNewRedisServer(t *testing.T) {
 	if err != nil {
 		t.Errorf("Cannot connec to fake redis server: %v", err)
 	}
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			t.Logf("Error closing connection: %v", err)
+		}
+	}()
 
 	testCases := []struct {
 		input  string
@@ -127,7 +131,10 @@ func TestNewRedisServer(t *testing.T) {
 
 	for i, tt := range testCases {
 		// write to fake redis
-		fmt.Fprint(conn, tt.input)
+		if _, err := fmt.Fprint(conn, tt.input); err != nil {
+			t.Errorf("[test %d] Error writing to connection: %v", i, err)
+			continue
+		}
 
 		//read from fake redis
 		var message []string

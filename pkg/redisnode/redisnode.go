@@ -269,29 +269,37 @@ func (r *RedisNode) configureHealth(ctx context.Context) error {
 func readinessCheck(ctx context.Context, addr string) error {
 	client, rediserr := redis.NewClient(ctx, addr, time.Second, map[string]string{}) // will fail if node not accessible or slot range not set
 	if rediserr != nil {
-		return fmt.Errorf("Readiness failed, err: %v", rediserr)
+		return fmt.Errorf("readiness failed, err: %v", rediserr)
 	}
-	defer client.Close()
+	defer func() {
+		if err := client.Close(); err != nil {
+			glog.Errorf("Error closing redis client in readiness check: %v", err)
+		}
+	}()
 
 	var resp radix.ClusterTopo
 	err := client.DoCmd(ctx, &resp, "CLUSTER", "SLOTS")
 	if err != nil {
-		return fmt.Errorf("Readiness failed, cluster slots response err: %v", err)
+		return fmt.Errorf("readiness failed, cluster slots response err: %v", err)
 	}
 	if len(resp) == 0 {
-		return fmt.Errorf("Readiness failed, cluster slots response empty")
+		return fmt.Errorf("readiness failed, cluster slots response empty")
 	}
-	glog.V(6).Info("Readiness probe ok")
+	glog.V(6).Info("readiness probe ok")
 	return nil
 }
 
 func livenessCheck(ctx context.Context, addr string) error {
 	client, rediserr := redis.NewClient(ctx, addr, time.Second, map[string]string{}) // will fail if node not accessible or slot range not set
 	if rediserr != nil {
-		return fmt.Errorf("Liveness failed, err: %v", rediserr)
+		return fmt.Errorf("liveness failed, err: %v", rediserr)
 	}
-	defer client.Close()
-	glog.V(6).Info("Liveness probe ok")
+	defer func() {
+		if err := client.Close(); err != nil {
+			glog.Errorf("Error closing redis client in liveness check: %v", err)
+		}
+	}()
+	glog.V(6).Info("liveness probe ok")
 	return nil
 }
 
@@ -349,14 +357,22 @@ func testAndWaitConnection(ctx context.Context, addr string, maxWait time.Durati
 			time.Sleep(100 * time.Millisecond)
 			continue
 		}
-		defer client.Close()
+		defer func() {
+			if err := client.Close(); err != nil {
+				glog.Errorf("Error closing test connection: %v", err)
+			}
+		}()
 		var resp string
 		if err := client.Do(ctx, radix.Cmd(&resp, "PING")); err != nil {
-			client.Close()
+			if err := client.Close(); err != nil {
+				glog.Errorf("Error closing client after PING error: %v", err)
+			}
 			time.Sleep(100 * time.Millisecond)
 			continue
 		} else if resp != "PONG" {
-			client.Close()
+			if err := client.Close(); err != nil {
+				glog.Errorf("Error closing client after wrong PING response: %v", err)
+			}
 			time.Sleep(100 * time.Millisecond)
 			continue
 		}
