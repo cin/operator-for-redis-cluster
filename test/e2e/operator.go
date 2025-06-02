@@ -6,15 +6,15 @@ import (
 	api "k8s.io/api/core/v1"
 	kclient "sigs.k8s.io/controller-runtime/pkg/client"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/onsi/ginkgo"
+	"github.com/onsi/gomega"
 
 	rapi "github.com/IBM/operator-for-redis-cluster/api/v1alpha1"
 	"github.com/IBM/operator-for-redis-cluster/test/e2e/framework"
 )
 
 func deleteRedisCluster(kubeClient kclient.Client, cluster *rapi.RedisCluster) {
-	Expect(kubeClient.Delete(context.Background(), cluster)).To(Succeed())
+	gomega.Expect(kubeClient.Delete(context.Background(), cluster)).To(gomega.Succeed())
 }
 
 const (
@@ -28,31 +28,31 @@ var cluster *rapi.RedisCluster
 const clusterName = "cluster1"
 const clusterNs = api.NamespaceDefault
 
-var _ = BeforeSuite(func() {
+var _ = ginkgo.BeforeSuite(func() {
 	kubeClient = framework.BuildAndSetClients()
 })
 
-var _ = AfterSuite(func() {
+var _ = ginkgo.AfterSuite(func() {
 	deleteRedisCluster(kubeClient, cluster)
 })
 
-var _ = Describe("RedisCluster CRUD operations", func() {
-	It("should create a RedisCluster", func() {
+var _ = ginkgo.Describe("RedisCluster CRUD operations", func() {
+	ginkgo.It("should create a RedisCluster", func() {
 		cluster = framework.NewRedisCluster(clusterName, clusterNs, framework.FrameworkContext.ImageTag, defaultPrimaries, defaultReplicas)
-		Eventually(framework.CreateRedisNodeServiceAccountFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+		gomega.Eventually(framework.CreateRedisNodeServiceAccountFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-		Eventually(framework.CreateRedisClusterFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+		gomega.Eventually(framework.CreateRedisClusterFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-		Eventually(framework.CreateRedisClusterConfigMapFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+		gomega.Eventually(framework.CreateRedisClusterConfigMapFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-		Eventually(framework.IsPodDisruptionBudgetCreatedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+		gomega.Eventually(framework.IsPodDisruptionBudgetCreatedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-		Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "8m", "5s").ShouldNot(HaveOccurred())
+		gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "8m", "5s").ShouldNot(gomega.HaveOccurred())
 
-		Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(HaveOccurred())
+		gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(gomega.HaveOccurred())
 	})
-	Context("a RedisCluster is created", func() {
-		It("should update RedisCluster server config", func() {
+	ginkgo.Context("a RedisCluster is created", func() {
+		ginkgo.It("should update RedisCluster server config", func() {
 			newConfig := map[string]string{
 				"redis.yaml": `
 maxmemory-policy: volatile-lfu
@@ -65,103 +65,103 @@ maxmemory 4gb
 cluster-enabled yes
 lazyfree-lazy-expire yes`,
 			}
-			Eventually(framework.UpdateRedisClusterConfigMapFunc(kubeClient, cluster, newConfig), "5s", "1s").ShouldNot(HaveOccurred())
+			gomega.Eventually(framework.UpdateRedisClusterConfigMapFunc(kubeClient, cluster, newConfig), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-			Eventually(framework.GetConfigUpdateEventFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+			gomega.Eventually(framework.GetConfigUpdateEventFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 		})
-		It("should update the RedisCluster", func() {
+		ginkgo.It("should update the RedisCluster", func() {
 			newTag := "new"
 			cluster = framework.NewRedisCluster(clusterName, clusterNs, newTag, defaultPrimaries, defaultReplicas)
 
-			Eventually(framework.UpdateRedisClusterFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+			gomega.Eventually(framework.UpdateRedisClusterFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-			Eventually(framework.IsPodSpecUpdatedFunc(kubeClient, cluster, newTag), "5m", "5s").ShouldNot(HaveOccurred())
+			gomega.Eventually(framework.IsPodSpecUpdatedFunc(kubeClient, cluster, newTag), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-			Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(HaveOccurred())
+			gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-			Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+			gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 		})
-		It("should scale up the RedisCluster", func() {
+		ginkgo.It("should scale up the RedisCluster", func() {
 			nbPrimary := int32(4)
-			Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, nil), "5s", "1s").ShouldNot(HaveOccurred())
+			gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, nil), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-			Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(HaveOccurred())
+			gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-			Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(HaveOccurred())
+			gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(gomega.HaveOccurred())
 		})
-		Context("a RedisCluster is running", func() {
-			When("the number of primaries is reduced", func() {
-				It("should scale down the RedisCluster", func() {
+		ginkgo.Context("a RedisCluster is running", func() {
+			ginkgo.When("the number of primaries is reduced", func() {
+				ginkgo.It("should scale down the RedisCluster", func() {
 					nbPrimary := int32(3)
-					Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, nil), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, nil), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
 			})
-			When("the number of replicas is increased", func() {
-				It("should create additional replicas for each primary in the RedisCluster", func() {
+			ginkgo.When("the number of replicas is increased", func() {
+				ginkgo.It("should create additional replicas for each primary in the RedisCluster", func() {
 					replicas := int32(2)
-					Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, nil, &replicas), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, nil, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
 			})
-			When("the number of replicas is decreased", func() {
-				It("should delete replicas for each primary in the RedisCluster", func() {
+			ginkgo.When("the number of replicas is decreased", func() {
+				ginkgo.It("should delete replicas for each primary in the RedisCluster", func() {
 					replicas := int32(1)
-					Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, nil, &replicas), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, nil, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "10s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
 			})
-			When("the number of primaries is decreased and the number of replicas is increased", func() {
-				It("should scale down the primaries and create additional replicas in the RedisCluster", func() {
+			ginkgo.When("the number of primaries is decreased and the number of replicas is increased", func() {
+				ginkgo.It("should scale down the primaries and create additional replicas in the RedisCluster", func() {
 					nbPrimary := int32(2)
 					replicas := int32(2)
-					Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
 			})
-			When("the number of primaries is increased and the number of replicas is decreased", func() {
-				It("should scale up the primaries and delete replicas in the RedisCluster", func() {
+			ginkgo.When("the number of primaries is increased and the number of replicas is decreased", func() {
+				ginkgo.It("should scale up the primaries and delete replicas in the RedisCluster", func() {
 					nbPrimary := int32(3)
 					replicas := int32(1)
-					Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
 			})
-			When("the number of primaries is increased and the number of replicas is increased", func() {
-				It("should scale up the primaries and create additional replicas in the RedisCluster", func() {
+			ginkgo.When("the number of primaries is increased and the number of replicas is increased", func() {
+				ginkgo.It("should scale up the primaries and create additional replicas in the RedisCluster", func() {
 					nbPrimary := int32(4)
 					replicas := int32(2)
-					Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
 			})
-			When("the number of primaries is decreased and the number of replicas is decreased", func() {
-				It("should scale down the primaries and delete replicas in the RedisCluster", func() {
+			ginkgo.When("the number of primaries is decreased and the number of replicas is decreased", func() {
+				ginkgo.It("should scale down the primaries and delete replicas in the RedisCluster", func() {
 					nbPrimary := int32(3)
 					replicas := int32(1)
-					Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
 
-					Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(HaveOccurred())
+					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
 			})
 		})

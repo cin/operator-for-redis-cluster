@@ -118,7 +118,11 @@ func TestRedisInitializationAttach(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(tmpfile.Name()) // clean up
+	defer func() {
+		if err := os.Remove(tmpfile.Name()); err != nil {
+			t.Logf("Error removing temp file %s: %v", tmpfile.Name(), err)
+		}
+	}() // clean up
 
 	c := &Config{
 		Redis:   config.Redis{ServerPort: "1234", ConfigFileName: tmpfile.Name()},

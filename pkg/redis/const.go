@@ -24,5 +24,5 @@ const (
 // Redis error constants
 const (
 	// ErrNotFound cannot find a node to connect to
-	ErrNotFound = "Unable to find a node to connect"
+	ErrNotFound = "unable to find a node to connect"
 )

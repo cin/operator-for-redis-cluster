@@ -84,7 +84,7 @@ func NewAdminConnections(ctx context.Context, addrs []string, options *AdminOpti
 // Close used to close all possible resources instantiated by the Connections
 func (cnx *AdminConnections) Close() {
 	for _, c := range cnx.clients {
-		c.Close()
+		CloseWithLog(c, "client connection")
 	}
 }
 
@@ -98,7 +98,7 @@ func (cnx *AdminConnections) Add(ctx context.Context, addr string) error {
 // Remove disconnect and remove the client connection from the map
 func (cnx *AdminConnections) Remove(addr string) {
 	if c, ok := cnx.clients[addr]; ok {
-		c.Close()
+		CloseWithLogf(c, "connection to %s", addr)
 		delete(cnx.clients, addr)
 	}
 }
@@ -108,7 +108,7 @@ func (cnx *AdminConnections) Remove(addr string) {
 func (cnx *AdminConnections) Update(ctx context.Context, addr string) (ClientInterface, error) {
 	// if already exist close the current connection
 	if c, ok := cnx.clients[addr]; ok {
-		c.Close()
+		CloseWithLogf(c, "existing connection to %s", addr)
 	}
 
 	c, err := cnx.connect(ctx, addr)
@@ -206,7 +206,7 @@ func (cnx *AdminConnections) ReplaceAll(ctx context.Context, addrs []string) {
 // Reset close all connections and clear the connection map
 func (cnx *AdminConnections) Reset() {
 	for _, c := range cnx.clients {
-		c.Close()
+		CloseWithLog(c, "client connection")
 	}
 	cnx.clients = map[string]ClientInterface{}
 }
@@ -288,7 +288,7 @@ func buildCommandReplaceMapping(filePath string) map[string]string {
 		glog.Errorf("Cannot open %s: %v", filePath, err)
 		return mapping
 	}
-	defer file.Close()
+	defer DeferCloseWithLogf(file, "file %s", filePath)()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {

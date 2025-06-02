@@ -11,6 +11,8 @@ import (
 	"strings"
 	"sync"
 	"testing"
+
+	"github.com/IBM/operator-for-redis-cluster/pkg/redis"
 )
 
 // RedisServer Fake Redis Server struct
@@ -43,7 +45,7 @@ func NewRedisServer(t *testing.T) *RedisServer {
 
 // Close possible resources
 func (r *RedisServer) Close() {
-	r.Ln.Close()
+	redis.CloseWithTestLog(r.test, r.Ln, "fake redis server listener")
 }
 
 // GetHostPort return the host port of redis server
@@ -87,7 +89,7 @@ func (r *RedisServer) handleConnection() {
 				break
 			}
 		}
-		defer conn.Close()
+		defer redis.DeferCloseWithTestLog(r.test, conn, "connection")()
 		var wait sync.WaitGroup
 		wait.Add(1)
 		go func(conn net.Conn, wait *sync.WaitGroup) {

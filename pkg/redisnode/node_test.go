@@ -72,20 +72,32 @@ cluster-node-timeout 321`,
 			if createerr != nil {
 				t.Errorf("Couldn' t create temporary config file: %v", createerr)
 			}
-			defer os.RemoveAll(redisConfDir)
-			redisConfFile.Close()
+			defer func() {
+				if err := os.RemoveAll(redisConfDir); err != nil {
+					t.Logf("Error removing temp dir %s: %v", redisConfDir, err)
+				}
+			}()
+			if err := redisConfFile.Close(); err != nil {
+				t.Errorf("Error closing redis config file: %v", err)
+			}
 
 			podInfoTempDir, _ := os.MkdirTemp("", "pod-info-test")
 			memLimitFile, err := os.Create(filepath.Join(podInfoTempDir, "mem-limit"))
 			if err != nil {
 				t.Errorf("Couldn' t create temporary config file: %v", err)
 			}
-			defer os.RemoveAll(podInfoTempDir)
+			defer func() {
+				if err := os.RemoveAll(podInfoTempDir); err != nil {
+					t.Logf("Error removing temp dir %s: %v", podInfoTempDir, err)
+				}
+			}()
 			_, err = memLimitFile.Write([]byte(tc.podRequestLimit))
 			if err != nil {
 				t.Errorf("Couldn't write to temporary config file: %v", err)
 			}
-			memLimitFile.Close()
+			if err := memLimitFile.Close(); err != nil {
+				t.Errorf("Error closing memory limit file: %v", err)
+			}
 
 			var additionalConfigFileNames []string
 			additionalConfDir, _ := os.MkdirTemp("", "additional-redisconf")
@@ -99,8 +111,14 @@ cluster-node-timeout 321`,
 				if err != nil {
 					t.Errorf("Couldn't write to temporary config file: %v", err)
 				}
-				defer os.RemoveAll(redisConfDir)
-				configFile.Close()
+				defer func() {
+					if err := os.RemoveAll(redisConfDir); err != nil {
+						t.Logf("Error removing temp dir %s: %v", redisConfDir, err)
+					}
+				}()
+				if err := configFile.Close(); err != nil {
+					t.Errorf("Error closing config file: %v", err)
+				}
 			}
 
 			a := admin.NewFakeAdmin()

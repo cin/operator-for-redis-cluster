@@ -128,7 +128,11 @@ func (n *Node) addSettingInConfigFile(line string) error {
 		return fmt.Errorf("unable to set '%s' in config file, openfile error %s err:%v", line, n.config.Redis.ConfigFileName, err)
 	}
 
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			glog.Errorf("Error closing config file %s: %v", n.config.Redis.ConfigFileName, err)
+		}
+	}()
 
 	_, err = f.WriteString(line + "\n")
 	if err != nil {
@@ -150,7 +154,11 @@ func (n *Node) getConfig(name string) (string, error) {
 			return "", fmt.Errorf("unable to read a config from file, openfile error %s err:%v", configFile, err)
 		}
 
-		defer f.Close()
+		defer func() {
+			if err := f.Close(); err != nil {
+				glog.Errorf("Error closing config file %s: %v", configFile, err)
+			}
+		}()
 		scanner := bufio.NewScanner(f)
 		for scanner.Scan() {
 			line := strings.TrimSpace(scanner.Text())
@@ -216,7 +224,11 @@ func clearFolder(folder string) error {
 		glog.Infof("Cannot access folder %s: %v", folder, err)
 		return err
 	}
-	defer d.Close()
+	defer func() {
+		if err := d.Close(); err != nil {
+			glog.Errorf("Error closing directory %s: %v", folder, err)
+		}
+	}()
 	names, err := d.Readdirnames(-1)
 	if err != nil {
 		glog.Infof("Cannot read files in %s: %v", folder, err)
@@ -243,7 +255,11 @@ func getPodMemoryLimit(memFilePath string) (uint64, error) {
 		}
 		return 0, err
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			glog.Errorf("Error closing memory limit file %s: %v", memFilePath, err)
+		}
+	}()
 
 	memLimitStr, err := io.ReadAll(f)
 	if err != nil {
