@@ -25,6 +25,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
+          version: latest
           args: --timeout=3m --enable copyloopvar --out-format colored-line-number
 
       - name: Run integration tests
