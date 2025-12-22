@@ -106,6 +106,8 @@ affinity: {}
 
 zoneAwareReplication: true
 
+priorityClassName: ""
+
 metrics:
   grafanaDashboard:
     enabled: false
