@@ -65,9 +65,7 @@ Create the name of the service account to use
 Builds the argument list for the redis operator
 */}}
 {{- define "operator-for-redis.arglist" -}}
-{{- $logLevel := (print "--v=" .Values.logLevel) -}}
+{{- $logLevel := print "--v=" .Values.logLevel -}}
 {{- $args := concat (prepend .Values.args $logLevel) .Values.extraArgs -}}
-{{- $argsList := list }}
-{{- range $args }}{{- $argAsStr := . | quote }}{{- $argsList = append $argsList $argAsStr}}{{- end}}
-{{- join "," (compact $argsList) }}
+{{- compact $args | toYaml }}
 {{- end -}}
