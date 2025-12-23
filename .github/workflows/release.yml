@@ -121,7 +121,7 @@ jobs:
     needs: [ operator, cluster-node, metrics ]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Helm
         uses: azure/setup-helm@v4
@@ -157,7 +157,7 @@ jobs:
     needs: [ helm-release ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -181,7 +181,7 @@ jobs:
     needs: [ docs ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
