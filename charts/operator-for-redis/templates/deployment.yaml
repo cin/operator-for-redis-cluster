@@ -49,7 +49,11 @@ spec:
             value: {{ .Release.Namespace | quote }}
           - name: LEADERELECTION_ENABLED
             value: {{ if gt (int .Values.replicaCount) 1 }}"true"{{ else }}"false"{{ end }}
-          args: [{{- include "operator-for-redis.arglist" . | nindent 12 }}]
+          args:
+            - "--v={{ .Values.logLevel }}"
+            {{- range $arg := concat .Values.args .Values.extraArgs }}
+            - {{ quote $arg }}
+            {{- end }}
           {{- with .Values.securityContext }}
           securityContext:
           {{- toYaml . | nindent 12 }}
@@ -78,4 +82,7 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.priorityClassName }}
+      priorityClassName: {{ . }}
       {{- end }}
