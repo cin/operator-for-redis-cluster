@@ -102,7 +102,7 @@ func TestIsClusterInitialization(t *testing.T) {
 	for _, tc := range testCases {
 		node := &RedisNode{
 			config:     &conf,
-			kubeClient: kfakeclient.NewSimpleClientset(&tc.endpointSlice),
+			kubeClient: kfakeclient.NewClientset(&tc.endpointSlice),
 		}
 		_, isInit := node.isClusterInitialization(currentIP)
 		if isInit != tc.isInitialization {
@@ -150,7 +150,7 @@ func TestRedisInitializationAttach(t *testing.T) {
 	rn := &RedisNode{
 		config:     c,
 		redisAdmin: fakeAdmin,
-		kubeClient: kfakeclient.NewSimpleClientset(&endpointSlice),
+		kubeClient: kfakeclient.NewClientset(&endpointSlice),
 	}
 
 	node, err := rn.init()
