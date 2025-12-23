@@ -60,12 +60,3 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
-
-{{/*
-Builds the argument list for the redis operator
-*/}}
-{{- define "operator-for-redis.arglist" -}}
-{{- $logLevel := print "--v=" .Values.logLevel -}}
-{{- $args := concat (prepend .Values.args $logLevel) .Values.extraArgs -}}
-{{- compact $args | toYaml }}
-{{- end -}}

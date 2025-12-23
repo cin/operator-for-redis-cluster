@@ -50,7 +50,10 @@ spec:
           - name: LEADERELECTION_ENABLED
             value: {{ if gt (int .Values.replicaCount) 1 }}"true"{{ else }}"false"{{ end }}
           args:
-            {{- include "operator-for-redis.arglist" . | nindent 12 }}
+            - "--v={{ .Values.logLevel }}"
+            {{- range $arg := concat .Values.args .Values.extraArgs }}
+            - {{ quote $arg }}
+            {{- end }}
           {{- with .Values.securityContext }}
           securityContext:
           {{- toYaml . | nindent 12 }}
