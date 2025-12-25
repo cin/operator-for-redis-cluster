@@ -7,7 +7,7 @@ on:
 
 env:
   GO_VERSION: '1.25'
-  HELM_VERSION: v3.18.0
+  HELM_VERSION: v4.0.4
   PYTHON_VERSION: '3.12' # required for helm tester
 
 jobs:
