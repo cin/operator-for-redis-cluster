@@ -147,7 +147,7 @@ jobs:
         run: |
           git config --global user.email ""
           git config --global user.name "Github Actions CI"
-          helm repo index helm-releases --url https://raw.githubusercontent.com/${{ github.repository }}/operator-for-redis-cluster/main/helm-releases
+          helm repo index helm-releases --url https://raw.githubusercontent.com/${{ github.repository }}/main/helm-releases
           git add helm-releases/*
           git commit -a -m "Release $OPERATOR_VERSION"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
