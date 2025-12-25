@@ -277,13 +277,13 @@ func readinessCheck(ctx context.Context, addr string) error {
 		}
 	}()
 
-	var resp radix.ClusterTopo
-	err := client.DoCmd(ctx, &resp, "CLUSTER", "SLOTS")
+	var resp []interface{}
+	err := client.DoCmd(ctx, &resp, "CLUSTER", "SHARDS")
 	if err != nil {
-		return fmt.Errorf("readiness failed, cluster slots response err: %v", err)
+		return fmt.Errorf("readiness failed, cluster shards response err: %v", err)
 	}
 	if len(resp) == 0 {
-		return fmt.Errorf("readiness failed, cluster slots response empty")
+		return fmt.Errorf("readiness failed, cluster shards response empty")
 	}
 	glog.V(6).Info("readiness probe ok")
 	return nil
