@@ -10,7 +10,7 @@ require (
 	github.com/mediocregopher/radix/v4 v4.1.4
 	github.com/olekukonko/tablewriter v1.1.2
 	github.com/onsi/ginkgo v1.16.5
-	github.com/onsi/gomega v1.38.3
+	github.com/onsi/gomega v1.39.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/spf13/pflag v1.0.10
 	gopkg.in/yaml.v3 v3.0.1
