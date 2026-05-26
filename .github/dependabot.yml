@@ -1,25 +1,55 @@
 version: 2
 updates:
-  # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 3
+    groups:
+      github-actions:
+        patterns: ["*"]
 
-  # Maintain Go dependencies
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 3
+    groups:
+      go-mod-root:
+        patterns: ["*"]
 
-  # Maintain npm dependencies in docs folder
+  - package-ecosystem: "gomod"
+    directory: "/hack/tools/operator-sdk"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      operator-sdk-tools:
+        patterns: ["*"]
+
+  - package-ecosystem: "gomod"
+    directory: "/hack/tools/controller-gen"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 1
+    groups:
+      controller-gen-tools:
+        patterns: ["*"]
+
   - package-ecosystem: "npm"
     directory: "/docs"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 2
+    groups:
+      docs-npm:
+        patterns: ["*"]
 
-  # Maintain Docker dependencies
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 2
+    groups:
+      docker-images:
+        patterns: ["*"]

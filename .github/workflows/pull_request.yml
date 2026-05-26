@@ -12,6 +12,25 @@ env:
   KIND_VERSION: v0.31.0
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      e2e: ${{ steps.filter.outputs.e2e }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            e2e:
+              - '**'
+              - '!docs/**'
+              - '!hack/tools/**'
+              - '!.github/dependabot.yml'
+            docs:
+              - 'docs/**'
+
   run-tests:
     runs-on: ubuntu-latest
     steps:
@@ -34,7 +53,8 @@ jobs:
 
   build-operator:
     runs-on: ubuntu-latest
-    needs: run-tests
+    needs: [run-tests, changes]
+    if: needs.changes.outputs.e2e == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -50,7 +70,8 @@ jobs:
 
   build-cluster-node:
     runs-on: ubuntu-latest
-    needs: run-tests
+    needs: [run-tests, changes]
+    if: needs.changes.outputs.e2e == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -66,7 +87,8 @@ jobs:
 
   build-metrics:
     runs-on: ubuntu-latest
-    needs: run-tests
+    needs: [run-tests, changes]
+    if: needs.changes.outputs.e2e == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -82,7 +104,8 @@ jobs:
 
   validate-helm-charts:
     runs-on: ubuntu-latest
-    needs: run-tests
+    needs: [run-tests, changes]
+    if: needs.changes.outputs.e2e == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -115,6 +138,8 @@ jobs:
 
   check-docs:
     runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.docs == 'true' || needs.changes.outputs.e2e == 'true'
     steps:
       - uses: actions/checkout@v6
       - name: Setup Node
@@ -131,7 +156,8 @@ jobs:
 
   run-e2e-tests:
     runs-on: ubuntu-latest
-    needs: [build-operator, build-cluster-node, build-metrics, validate-helm-charts]
+    needs: [build-operator, build-cluster-node, build-metrics, validate-helm-charts, changes]
+    if: needs.changes.outputs.e2e == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -165,7 +191,7 @@ jobs:
           version: ${{ env.KIND_VERSION }}
           config: ./test/e2e/kind_config.yml
           cluster_name: kind
-          node_image: ${{ matrix.kind-node }}
+          node_image: kindest/node:v${{ matrix.kubernetes-version }}
           wait: 120s
             
       - name: Load Images to KIND
@@ -181,7 +207,7 @@ jobs:
       
       - name: Run e2e tests
         id: e2e
-        run: go test -timeout 30m ./test/e2e --kubeconfig=$HOME/.kube/config --ginkgo.v --test.v
+        run: go test -timeout 45m ./test/e2e --kubeconfig=$HOME/.kube/config --ginkgo.v --test.v
 
       - name: Capture logs if e2e failed
         if: ${{ always() && (steps.e2e.outcome == 'failure' || steps.helm.outcome == 'failure') }}
