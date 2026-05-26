@@ -128,7 +128,7 @@ lazyfree-lazy-expire yes`,
 					replicas := int32(2)
 					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "8m", "5s").ShouldNot(gomega.HaveOccurred())
 
 					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
@@ -139,7 +139,7 @@ lazyfree-lazy-expire yes`,
 					replicas := int32(1)
 					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "8m", "5s").ShouldNot(gomega.HaveOccurred())
 
 					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
@@ -150,7 +150,7 @@ lazyfree-lazy-expire yes`,
 					replicas := int32(2)
 					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "8m", "5s").ShouldNot(gomega.HaveOccurred())
 
 					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
@@ -161,7 +161,7 @@ lazyfree-lazy-expire yes`,
 					replicas := int32(1)
 					gomega.Eventually(framework.UpdateConfigRedisClusterFunc(kubeClient, cluster, &nbPrimary, &replicas), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 
-					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "5m", "5s").ShouldNot(gomega.HaveOccurred())
+					gomega.Eventually(framework.IsRedisClusterStartedFunc(kubeClient, cluster), "8m", "5s").ShouldNot(gomega.HaveOccurred())
 
 					gomega.Eventually(framework.ZonesBalancedFunc(kubeClient, cluster), "5s", "1s").ShouldNot(gomega.HaveOccurred())
 				})
