@@ -35,7 +35,9 @@ When you are ready to make a pull request, we suggest you run:
 
 ```console
 $ make generate
-//path/to/go/bin/controller-gen object paths="./..."
+make controller-gen   # installs v0.21.0 from hack/tools/controller-gen
+make generate
+make manifests
 $ make fmt
 find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do gofmt -w -s "$file"; goimports -w "$file"; done
 $ make lint

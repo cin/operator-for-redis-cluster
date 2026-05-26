@@ -8,7 +8,7 @@ import (
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 
 	rapi "github.com/IBM/operator-for-redis-cluster/api/v1alpha1"
 	"github.com/IBM/operator-for-redis-cluster/pkg/controller/pod"
@@ -27,11 +27,11 @@ type ServicesControlInterface interface {
 // ServicesControl contains all information for managing Kube Services
 type ServicesControl struct {
 	KubeClient client.Client
-	Recorder   record.EventRecorder
+	Recorder   events.EventRecorder
 }
 
 // NewServicesControl builds and returns new ServicesControl instance
-func NewServicesControl(client client.Client, rec record.EventRecorder) *ServicesControl {
+func NewServicesControl(client client.Client, rec events.EventRecorder) *ServicesControl {
 	ctrl := &ServicesControl{
 		KubeClient: client,
 		Recorder:   rec,

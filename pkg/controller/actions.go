@@ -388,7 +388,7 @@ func (c *Controller) createPod(ctx context.Context, cluster *rapi.RedisCluster) 
 	}
 	if !ok {
 		glog.Warningf("Insufficient resources to schedule a new pod on nodes in this cluster. Please allocate more resources for existing nodes or create additional nodes.")
-		c.recorder.Event(cluster, v1.EventTypeWarning, "InsufficientResources", "Insufficient resources to schedule pod")
+		c.recorder.Eventf(cluster, nil, v1.EventTypeWarning, "InsufficientResources", "InsufficientResources", "Insufficient resources to schedule pod")
 	}
 	pod, err := c.podControl.CreatePod(cluster)
 	if err != nil {
