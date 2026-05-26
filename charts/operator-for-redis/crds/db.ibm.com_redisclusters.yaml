@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.17.3
+    controller-gen.kubebuilder.io/version: v0.21.0
   name: redisclusters.db.ibm.com
 spec:
   group: db.ibm.com
@@ -4413,6 +4413,14 @@ spec:
                         x-kubernetes-list-map-keys:
                         - name
                         x-kubernetes-list-type: map
+                      schedulingGroup:
+                        description: SchedulingGroup provides a reference to the immediate...
+                        properties:
+                          podGroupName:
+                            description: PodGroupName specifies the name of the standalone
+                              PodGroup...
+                            type: string
+                        type: object
                       securityContext:
                         description: SecurityContext holds pod-level security attributes
                           and common...
@@ -6021,26 +6029,6 @@ spec:
                         x-kubernetes-list-map-keys:
                         - name
                         x-kubernetes-list-type: map
-                      workloadRef:
-                        description: WorkloadRef provides a reference to the Workload
-                          object that...
-                        properties:
-                          name:
-                            description: Name defines the name of the Workload object
-                              this Pod belongs...
-                            type: string
-                          podGroup:
-                            description: PodGroup is the name of the PodGroup within
-                              the Workload that...
-                            type: string
-                          podGroupReplicaKey:
-                            description: PodGroupReplicaKey specifies the replica
-                              key of the PodGroup to...
-                            type: string
-                        required:
-                        - name
-                        - podGroup
-                        type: object
                     required:
                     - containers
                     type: object

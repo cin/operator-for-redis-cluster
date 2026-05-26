@@ -1,5 +1,6 @@
 domain: ibm.com
-layout: go.kubebuilder.io/v3-alpha
+layout:
+- go.kubebuilder.io/v4
 repo: github.com/IBM/operator-for-redis-cluster
 projectName: operator-for-redis-cluster
 resources:
@@ -13,6 +14,7 @@ resources:
   path: github.com/IBM/operator-for-redis-cluster/pkg/api/redis/v1
   version: v1alpha1
 version: "3"
+# Dev tool pins: controller-gen v0.21.0, operator-sdk v1.42.2 (hack/tools/*/go.mod)
 plugins:
   manifests.sdk.operatorframework.io/v2: {}
   scorecard.sdk.operatorframework.io/v2: {}

@@ -4,7 +4,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-#	`go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.2.5` to install the tool
+#	`make controller-gen` installs controller-gen (see hack/tools/controller-gen/go.mod)
 controller-gen object:headerFile=./hack/custom-boilerplate.go.txt paths="github.com/IBM/operator-for-redis-cluster/pkg/..."
 
 # old code generator command

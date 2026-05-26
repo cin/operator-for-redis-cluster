@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 
 	rapi "github.com/IBM/operator-for-redis-cluster/api/v1alpha1"
 	"github.com/IBM/operator-for-redis-cluster/pkg/controller/pod"
@@ -30,11 +30,11 @@ type PodDisruptionBudgetsControlInterface interface {
 // PodDisruptionBudgetsControl contains all information for managing Kube PodDisruptionBudgets
 type PodDisruptionBudgetsControl struct {
 	KubeClient client.Client
-	Recorder   record.EventRecorder
+	Recorder   events.EventRecorder
 }
 
 // NewPodDisruptionBudgetsControl builds and returns new PodDisruptionBudgetsControl instance
-func NewPodDisruptionBudgetsControl(client client.Client, rec record.EventRecorder) *PodDisruptionBudgetsControl {
+func NewPodDisruptionBudgetsControl(client client.Client, rec events.EventRecorder) *PodDisruptionBudgetsControl {
 	ctrl := &PodDisruptionBudgetsControl{
 		KubeClient: client,
 		Recorder:   rec,

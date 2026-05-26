@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	rapi "github.com/IBM/operator-for-redis-cluster/api/v1alpha1"
+	eventsv1 "k8s.io/api/events/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -45,6 +46,7 @@ func NewFramework() (*Framework, error) {
 func (f *Framework) kubeClient() (kclient.Client, error) {
 	scheme := runtime.NewScheme()
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
+	utilruntime.Must(eventsv1.AddToScheme(scheme))
 	utilruntime.Must(rapi.AddToScheme(scheme))
 	return kclient.New(f.KubeConfig, kclient.Options{Scheme: scheme})
 }
