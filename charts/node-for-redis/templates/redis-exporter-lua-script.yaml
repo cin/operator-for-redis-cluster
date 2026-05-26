@@ -8,13 +8,36 @@ data:
   metrics.lua: |-
     local result = {}
 
-    local clusterSlots = redis.call('cluster', 'slots')
+    local clusterShards = redis.call('cluster', 'shards')
     local myID = redis.call('cluster', 'myid')
 
     local slotsOwned = 0
-    for i,v in ipairs(clusterSlots) do
-        if v[3][3] == myID then
-            slotsOwned = slotsOwned + (v[2] - v[1])
+    for i, shard in ipairs(clusterShards) do
+        -- CLUSTER SHARDS format: array of maps
+        -- Each shard is a map with keys: "id", "slots", "nodes", etc.
+        -- slots is an array of slot ranges: [[start, end], ...]
+        -- nodes is an array of node maps: [{id, endpoint, ip, port, role, ...}, ...]
+        local slots = shard['slots']
+        local nodes = shard['nodes']
+        
+        -- Check if this shard contains our node
+        local isMyShard = false
+        if nodes then
+            for j, node in ipairs(nodes) do
+                if node['id'] == myID then
+                    isMyShard = true
+                    break
+                end
+            end
+        end
+        
+        -- Count slots in this shard if it's ours
+        if isMyShard and slots then
+            for k, slotRange in ipairs(slots) do
+                local startSlot = slotRange[1]
+                local endSlot = slotRange[2]
+                slotsOwned = slotsOwned + (endSlot - startSlot + 1)
+            end
         end
     end
 

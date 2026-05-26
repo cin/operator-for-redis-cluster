@@ -14,10 +14,10 @@ The Redis operator manages clusters that operate in **cluster mode**. This means
 Redis clusters that operate in cluster mode support data sharding, which is essential to ensuring high availability. See the [Redis cluster specification](https://redis.io/topics/cluster-spec) to learn more.
 
 ## Configuration Options
-There are various configuration options you will want to consider whether you are using Redis as a cache or as a persistent database. We urge you to read the [Redis configuration documentation](https://raw.githubusercontent.com/redis/redis/6.2/redis.conf) to understand the tradeoffs for each option.
+There are various configuration options you will want to consider whether you are using Redis as a cache or as a persistent database. We urge you to read the [Redis configuration documentation](https://raw.githubusercontent.com/redis/redis/8.6/redis.conf) to understand the tradeoffs for each option.
 
 ### Defaults
-A Redis server is able to start without specifying a `redis.conf` configuration file or providing override configuration; it will instead use the default settings. We do not recommend using the defaults in a production environment, as your Redis database can quickly exceed the amount of memory allocated to your Redis pods. Our operator currently deploys and manages Redis clusters using Redis 6.2. Read the default configuration for [Redis 6.2](https://raw.githubusercontent.com/redis/redis/6.2/redis.conf) to learn more about the specific settings.
+A Redis server is able to start without specifying a `redis.conf` configuration file or providing override configuration; it will instead use the default settings. We do not recommend using the defaults in a production environment, as your Redis database can quickly exceed the amount of memory allocated to your Redis pods. Our operator currently deploys and manages Redis clusters using Redis 8.6. Read the default configuration for [Redis 8.6](https://raw.githubusercontent.com/redis/redis/8.6/redis.conf) to learn more about the specific settings.
 
 ### Persistence
 If you use Redis as a database, you will need to enable persistence. Redis provides multiple persistence options, such as Redis Database (RDB) and Append Only File (AOF). You can read more about the advantages and disadvantages of each persistence option in the [persistence documentation](https://redis.io/topics/persistence).

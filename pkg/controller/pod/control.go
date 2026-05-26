@@ -13,7 +13,7 @@ import (
 
 	kapiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 
 	rapi "github.com/IBM/operator-for-redis-cluster/api/v1alpha1"
 	"github.com/golang/glog"
@@ -40,11 +40,11 @@ var _ RedisClusterControlInterface = &RedisClusterControl{}
 // RedisClusterControl contains requires accessor to managing the RedisCluster pods
 type RedisClusterControl struct {
 	KubeClient client.Client
-	Recorder   record.EventRecorder
+	Recorder   events.EventRecorder
 }
 
 // NewRedisClusterControl builds and returns new NewRedisClusterControl instance
-func NewRedisClusterControl(client client.Client, rec record.EventRecorder) *RedisClusterControl {
+func NewRedisClusterControl(client client.Client, rec events.EventRecorder) *RedisClusterControl {
 	ctrl := &RedisClusterControl{
 		KubeClient: client,
 		Recorder:   rec,
