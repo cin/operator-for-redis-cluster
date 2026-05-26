@@ -22,7 +22,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	policyv1 "k8s.io/api/policy/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 
 	rapi "github.com/IBM/operator-for-redis-cluster/api/v1alpha1"
 	"github.com/IBM/operator-for-redis-cluster/pkg/controller/pod"
@@ -43,13 +43,13 @@ type Controller struct {
 	serviceControl             ServicesControlInterface
 	podDisruptionBudgetControl PodDisruptionBudgetsControlInterface
 
-	recorder record.EventRecorder
+	recorder events.EventRecorder
 
 	config *Config
 }
 
 // NewController builds and return new controller instance
-func NewController(cfg *Config, mgr manager.Manager, kubeClient kclient.Client, recorder record.EventRecorder) *Controller {
+func NewController(cfg *Config, mgr manager.Manager, kubeClient kclient.Client, recorder events.EventRecorder) *Controller {
 	controller := &Controller{
 		mgr:                        mgr,
 		client:                     kubeClient,
@@ -299,11 +299,11 @@ func (c *Controller) syncCluster(ctx context.Context, redisCluster *rapi.RedisCl
 		}
 		if len(configChanges) > 0 {
 			updateConfig(ctx, admin, configChanges)
-			c.recorder.Event(redisCluster, v1.EventTypeNormal, "ConfigUpdate", "Server configuration updated")
+			c.recorder.Eventf(redisCluster, nil, v1.EventTypeNormal, "ConfigUpdate", "ConfigUpdate", "Server configuration updated")
 		}
 		if !checkZoneBalance(redisCluster) {
 			glog.Warningf("Node zones are not balanced. Trigger a rolling update to force reschedule redis pods.")
-			c.recorder.Event(redisCluster, v1.EventTypeWarning, "UnbalancedZones", "Zones are unbalanced")
+			c.recorder.Eventf(redisCluster, nil, v1.EventTypeWarning, "UnbalancedZones", "UnbalancedZones", "Zones are unbalanced")
 		}
 		if needClusterOperation(redisCluster) || needSanitize {
 			result, err = c.clusterAction(ctx, admin, redisCluster, clusterInfos)

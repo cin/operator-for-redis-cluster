@@ -107,5 +107,5 @@ make TAG=<Your-TAG> container
 
 ### How to Upgrade Redis Client Version
 
-To upgrade your Redis client version, you will need to update the `REDIS_VERSION` variable in both the Dockerfile for Redis node and the Github release workflow. Please note that upgrading the Redis client version may impact functionality because the operator depends on the [radix library](https://github.com/mediocregopher/radix) for executing Redis commands.
+To upgrade your Redis client version, you will need to update the `REDIS_VERSION` variable in both `Dockerfile.node` and `.github/workflows/release.yml`. Redis 8 removed `CLUSTER SLOTS` in favor of `CLUSTER SHARDS`; the operator readiness probe and metrics Lua script use the new command. Please note that upgrading the Redis client version may impact functionality because the operator depends on the [radix library](https://github.com/mediocregopher/radix) for executing Redis commands.
 

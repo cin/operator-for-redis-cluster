@@ -63,7 +63,7 @@ func main() {
 	}
 
 	ctrlCfg := controller.NewConfig(1, config.Redis)
-	redisClusterCtrl := controller.NewController(ctrlCfg, mgr, mgr.GetClient(), mgr.GetEventRecorderFor("rediscluster-controller"))
+	redisClusterCtrl := controller.NewController(ctrlCfg, mgr, mgr.GetClient(), mgr.GetEventRecorder("rediscluster-controller"))
 	if err = controller.SetupRedisClusterController(mgr, redisClusterCtrl); err != nil {
 		glog.Fatalf("unable to set up rediscluster controller: %v", err)
 	}

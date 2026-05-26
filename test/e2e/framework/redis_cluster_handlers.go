@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"k8s.io/apimachinery/pkg/fields"
-
 	"github.com/gogo/protobuf/proto"
 
 	"github.com/IBM/operator-for-redis-cluster/pkg/utils"
@@ -289,25 +287,6 @@ func UpdateRedisClusterConfigMapFunc(kubeClient kclient.Client, redisCluster *ra
 		}
 		Logf("ConfigMap updated")
 		return nil
-	}
-}
-
-// GetConfigUpdateEventFunc returns a func to get the UpdateConfig event associated with the RedisCluster
-func GetConfigUpdateEventFunc(kubeClient kclient.Client, redisCluster *rapi.RedisCluster) func() error {
-	return func() error {
-		events := &v1.EventList{}
-		if err := kubeClient.List(context.Background(), events,
-			kclient.InNamespace(redisCluster.Namespace),
-			kclient.MatchingFieldsSelector{Selector: fields.OneTermEqualSelector("involvedObject.name", redisCluster.Name)}); err != nil {
-			glog.Warningf("cannot get events for RedisCluster %s/%s: %v", redisCluster.Namespace, redisCluster.Name, err)
-			return err
-		}
-		for _, event := range events.Items {
-			if event.Reason == "ConfigUpdate" {
-				return nil
-			}
-		}
-		return fmt.Errorf("no ConfigUpdate event for RedisCluster %s/%s", redisCluster.Namespace, redisCluster.Name)
 	}
 }
 

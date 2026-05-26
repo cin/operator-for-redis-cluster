@@ -62,22 +62,21 @@ manifests: controller-gen
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
 	$(CONTROLLER_GEN) object paths="./..."
 
-# find or download controller-gen
-# download controller-gen if necessary
+CONTROLLER_TOOLS_VERSION ?= v0.21.0
+OPERATOR_SDK_VERSION ?= v1.42.2
+
+# Install pinned dev tools (see hack/tools/*/go.mod).
 controller-gen:
-ifeq (, $(shell which controller-gen))
-	@{ \
-	set -e ;\
-	CONTROLLER_GEN_TMP_DIR=$$(mktemp -d) ;\
-	cd $$CONTROLLER_GEN_TMP_DIR ;\
-	go mod init tmp ;\
-	go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.17.3 ;\
-	rm -rf $$CONTROLLER_GEN_TMP_DIR ;\
-	}
-CONTROLLER_GEN=$(GOBIN)/controller-gen
-else
-CONTROLLER_GEN=$(shell which controller-gen)
-endif
+	go -C hack/tools/controller-gen install tool
+
+# operator-sdk v1.42.2 requires libgpgme-dev to build from source; use the release binary.
+operator-sdk:
+	@install -d $(GOBIN)
+	@curl -fsSL -o $(GOBIN)/operator-sdk \
+		https://github.com/operator-framework/operator-sdk/releases/download/$(OPERATOR_SDK_VERSION)/operator-sdk_linux_amd64
+	@chmod +x $(GOBIN)/operator-sdk
+
+CONTROLLER_GEN?=$(GOBIN)/controller-gen
 
 
 test:
