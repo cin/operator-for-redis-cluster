@@ -134,7 +134,7 @@ jobs:
       - name: Package operator-for-redis chart
         env:
           OPERATOR_VERSION: ${{ needs.operator.outputs.version }}
-        run: helm package charts/operator-for-redis --version=$OPERATOR_VERSION --destination helm-releases
+        run: helm package charts/operator-for-redis --version=$OPERATOR_VERSION --app-version=$OPERATOR_VERSION --destination helm-releases
 
       - name: Package node-for-redis chart
         env:
