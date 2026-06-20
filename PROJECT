@@ -14,7 +14,7 @@ resources:
   path: github.com/IBM/operator-for-redis-cluster/pkg/api/redis/v1
   version: v1alpha1
 version: "3"
-# Dev tool pins: controller-gen v0.21.0, operator-sdk v1.42.2 (hack/tools/*/go.mod)
+# Dev tool pins: controller-gen v0.21.0 (hack/tools/controller-gen/go.mod), operator-sdk v1.42.2 (release binary)
 plugins:
   manifests.sdk.operatorframework.io/v2: {}
   scorecard.sdk.operatorframework.io/v2: {}

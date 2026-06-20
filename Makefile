@@ -65,7 +65,7 @@ generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and
 CONTROLLER_TOOLS_VERSION ?= v0.21.0
 OPERATOR_SDK_VERSION ?= v1.42.2
 
-# Install pinned dev tools (see hack/tools/*/go.mod).
+# Install pinned dev tools.
 controller-gen:
 	go -C hack/tools/controller-gen install tool
 
