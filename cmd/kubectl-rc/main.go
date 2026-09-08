@@ -140,14 +140,10 @@ func outputRedisClusterState(data [][]string) {
 		})),
 		tablewriter.WithConfig(tablewriter.Config{
 			Header: tw.CellConfig{
-				Formatting: tw.CellFormatting{
-					Alignment: tw.AlignLeft,
-				},
+				Alignment: tw.CellAlignment{Global: tw.AlignLeft},
 			},
 			Row: tw.CellConfig{
-				Formatting: tw.CellFormatting{
-					Alignment: tw.AlignLeft,
-				},
+				Alignment: tw.CellAlignment{Global: tw.AlignLeft},
 			},
 		}))
 
